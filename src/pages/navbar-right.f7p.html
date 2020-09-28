@@ -1,4 +1,11 @@
 <template>
+	{{#unless searchMode}}
+	<a href="/favorites"
+	   id="link-favorites"
+		 class="link">
+		<i class="icon material-icons md-only">folder_special</i>
+	</a>
+	{{/unless}}
 	{{#js_if "this.isFavorite === true"}}
 	<a href="#"
 	   id="link-toggle-favorite"
@@ -29,17 +36,14 @@
 	</a>
 	{{/if}}
 
-
-	<!--
 	{{#unless searchMode}}
 	<a href="/search" class="link" >
 		<i class="icon f7-icons ios-only">search_strong</i>
 		<i class="icon material-icons md-only">search</i>
 	</a>
 	{{/unless}}
-	-->
 
-	<!--
+
 	<a href="#"
 		 class="link popover-open"
 		 data-popover=".popover-right-menu">
@@ -61,6 +65,7 @@
 					<li><a class="list-button item-link tab-link popover-close"
 								 href="#view-valaam">Валаам</a>
 					</li>
+					<!--
 					<li class="item-divider item-divider-empty"></li>
 					<li><a class="list-button item-link popover-close"
 							   data-view=".view.tab-active"
@@ -70,9 +75,9 @@
 							   data-view=".view.tab-active"
 								 href="/settings">Настройки</a>
 					</li>
+					-->
 				</ul>
 			</div>
 		</div>
 	</div>
-	-->
 </template>
