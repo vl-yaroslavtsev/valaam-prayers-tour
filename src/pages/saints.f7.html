@@ -209,86 +209,76 @@
 	import navbarLargeMixin from './navbar-large-mixin.js';
 
 	export default {
-		data() {
-			return {
-				dataPromise: loadData.call(this)
+		async data() {
+			let prayers = dataManager.cache.prayers;
+
+			let saintData = Object.assign({}, this.saint);
+
+			if (saintData.picture) {
+				saintData.picture = await getUrl({
+					s: this.saint.picture,
+					m: this.saint.picture_2x
+				});
+				saintData.picture_full = await getUrl({
+					s: this.saint.picture_3x,
+					sOffline: this.saint.picture,
+					mOffline: this.saint.picture_2x
+				});
 			}
+
+			saintData.text_short = saintData.text
+				.replace(/<\/?[^>]+>/gi, '')
+				.replace(/КРАТКОЕ ЖИТИЕ[^\n]*\n/ig, '')
+				.replace(/КРАТКИЕ ЖИТИЯ[^\n]*\n/ig, '')
+				.slice(0, 300)
+			;
+
+			saintData.isSaint = saintData.type === 's';
+			saintData.isHoliday = saintData.type === 'h';
+			saintData.isIcon = saintData.type === 'i';
+
+			saintData.prayers = prayers.e.find(
+				(e) => e.id === saintData.prayers_id
+			);
+
+			saintData.akathists = saintData.akathist_id.map(
+				(id) => prayers.e.find((e) => e.id === id)
+			);
+
+			saintData.canons = saintData.canon_id.map(
+				(id) => prayers.e.find((e) => e.id === id)
+			);
+
+			saintData.mineyas = saintData.minea_id.map((id) => {
+				let element = prayers.e.find((e) => e.id === id);
+				if (!element) return element;
+
+				element = Object.assign({}, element);
+
+				let section = prayers.s.find((s) => s.id === element.parent);
+				let dt = parse(format(new Date(), 'yyyy') + section.code, 'yyyyMMdd');
+
+				element.header = format(dt, 'd MMMM') +
+							 ' / ' +
+							 format(addDays(dt, 13), 'd MMMM');
+				return element;
+			});
+
+			saintData.hagiography = [];
+			if (saintData.hagiography_id) {
+				saintData.hagiography = saintData.hagiography_id.map(
+					(id) => prayers.e.find((e) => e.id === id)
+				);
+			}
+
+			saintData.searchMode = this.$route.query.mode === 'search';
+
+			return saintData;
 		},
 		mixins: [navbarLargeMixin],
 		on: {
 			async pageInit(e, page) {
-				let data = await this.dataPromise;
-				this.$setState(data);
-				await this.$tick();
-				this.$el.trigger('navbar:render');
 			}
 		}
 	};
-	
-	async function loadData() {
-		let prayers = dataManager.cache.prayers;
-
-		let saintData = Object.assign({}, this.saint);
-
-		if (saintData.picture) {
-			saintData.picture = await getUrl({
-				s: this.saint.picture,
-				m: this.saint.picture_2x
-			});
-			saintData.picture_full = await getUrl({
-				s: this.saint.picture_3x,
-				sOffline: this.saint.picture,
-				mOffline: this.saint.picture_2x
-			});
-		}
-
-		saintData.text_short = saintData.text
-			.replace(/<\/?[^>]+>/gi, '')
-			.replace(/КРАТКОЕ ЖИТИЕ[^\n]*\n/ig, '')
-			.replace(/КРАТКИЕ ЖИТИЯ[^\n]*\n/ig, '')
-			.slice(0, 300)
-		;
-
-		saintData.isSaint = saintData.type === 's';
-		saintData.isHoliday = saintData.type === 'h';
-		saintData.isIcon = saintData.type === 'i';
-
-		saintData.prayers = prayers.e.find(
-			(e) => e.id === saintData.prayers_id
-		);
-
-		saintData.akathists = saintData.akathist_id.map(
-			(id) => prayers.e.find((e) => e.id === id)
-		);
-
-		saintData.canons = saintData.canon_id.map(
-			(id) => prayers.e.find((e) => e.id === id)
-		);
-
-		saintData.mineyas = saintData.minea_id.map((id) => {
-			let element = prayers.e.find((e) => e.id === id);
-			if (!element) return element;
-
-			element = Object.assign({}, element);
-
-			let section = prayers.s.find((s) => s.id === element.parent);
-			let dt = parse(format(new Date(), 'yyyy') + section.code, 'yyyyMMdd');
-
-			element.header = format(dt, 'd MMMM') +
-						 ' / ' +
-						 format(addDays(dt, 13), 'd MMMM');
-			return element;
-		});
-
-		saintData.hagiography = [];
-		if (saintData.hagiography_id) {
-			saintData.hagiography = saintData.hagiography_id.map(
-				(id) => prayers.e.find((e) => e.id === id)
-			);
-		}
-
-		saintData.searchMode = this.$route.query.mode === 'search';
-
-		return saintData;
-	}
 </script>
