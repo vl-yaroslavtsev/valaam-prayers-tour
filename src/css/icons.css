@@ -16,7 +16,7 @@
   font-weight: 400;
   src: local('Material Icons Round'),
        local('MaterialIcons-Round'),
-       url(../fonts/MaterialIcons-Round.woff2) format('woff2');
+       url('../fonts/MaterialIcons-Round.woff2') format('woff2');
        /* url(../fonts/MaterialIcons-Round.woff) format('woff'); */
 }
 

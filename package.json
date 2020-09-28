@@ -1,14 +1,14 @@
 {
   "name": "ru.valaam.prayers",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Молитвослов и календарь от Валаамского монастыря",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch --progress",
     "dev": "webpack",
-    "dist": "webpack --env.production",
-    "prod": "webpack --env.production && rm -rf ../../prayers.f7/* && cp -r ./dist/. ../../prayers.f7/"
+    "dist": "webpack --env.production --env.hash",
+    "prod": "webpack --env.production --env.hash && rm -rf ../../prayers.f7/* && cp -r ./dist/. ../../prayers.f7/"
   },
   "keywords": [],
   "author": "Ивайло Тилев <ivaylo@tilev.ru>, Валаамский монастырь <webmaster@valaam.ru>",
