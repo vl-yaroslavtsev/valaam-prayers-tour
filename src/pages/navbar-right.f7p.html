@@ -21,13 +21,11 @@
 		 class="link">
 		 <i class="icon material-icons">settings</i>
 	</a>
-	{{/if}}
-	{{#if readMode}}
-	<a href="#"
-		 id="link-tutorial"
-		 class="link"
-		 @click="tutorial">
-		<i class="icon material-icons md-only">help_outline</i>
+	{{else}}
+	<a href="/settings"
+		 id="link-settings"
+		 class="link">
+		 <i class="icon material-icons">settings</i>
 	</a>
 	{{/if}}
 
