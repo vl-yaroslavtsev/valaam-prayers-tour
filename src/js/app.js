@@ -115,7 +115,7 @@ const app = new Framework7({
 	name: 'Валаамский молитвослов',
 	theme: navigator.userAgent.match(/Debug/) !== null ? 'auto' : 'md',
 	disabled: false,
-	version: "1.13.0",
+	version: "1.13.2",
 	// theme: 'ios',
 
 	statusbar: {
@@ -155,7 +155,7 @@ const app = new Framework7({
 					Ошибка при инициализации данных: [${ex.name}]: ${ex.message}
 				`, 30000);
 			}
-			
+
 			if (window['webkit']) {
 				this.once('canApplePay', (result) => {
 					this.data.canApplePay = result;
@@ -180,7 +180,7 @@ const app = new Framework7({
 
 			// this.phonegap.hideSplash();
 			// if (settingsManager.get('hideStatusbar')) {
-				// this.phonegap.statusbar.hide();	
+				// this.phonegap.statusbar.hide();
 			// } else {
 				// this.phonegap.statusbar.styleLightContent();
 			// }
@@ -281,13 +281,13 @@ const app = new Framework7({
 			if (opts.preloader) {
 				app.preloader.show();
 			}
-			
+
 			try {
 				return await dataManager.get(source, ...args);
 			} catch (err) {
 				let msg;
-				console.log('app.load error', err, source);
-				if (err.name === 'TypeError') {
+				//	console.log('app.load error', err.name, err.message, err, source);
+				if (err.message === 'Network error') {
 					let type = 'версию';
 					let dataId;
 					switch (source) {
@@ -344,7 +344,7 @@ const app = new Framework7({
 		buttonOk: 'Да',
 		buttonCancel: 'Отмена'
 	},
-	
+
 	touch: {
 		tapHold: true,
 	},

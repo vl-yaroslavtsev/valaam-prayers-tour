@@ -272,12 +272,11 @@ function requireData(source) {
 
 		try {
 			app.preloader.show();
-			await Promise.all(params.map((source) => dataManager.get(source)));
+			await Promise.all(params.map((source) => app.methods.load({src: source, preloader: false})));
 			app.preloader.hide();
 			resolve();
 		} catch(ex) {
 			app.preloader.hide();
-			app.methods.showLoadError();
 			reject();
 		}
 	};
