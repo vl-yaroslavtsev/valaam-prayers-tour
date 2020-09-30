@@ -97,6 +97,7 @@ import routes from './routes.js';
 import * as OfflinePlugin from 'offline-plugin/runtime';
 
 import dataManager from './data/manager.js';
+import {migrate} from './data/db-migrate.js';
 import downloadManager from './download/manager.js';
 import favoriteManager from './favorite-manager.js';
 import settingsManager from './settings-manager.js';
@@ -115,7 +116,7 @@ const app = new Framework7({
 	name: 'Валаамский молитвослов',
 	theme: navigator.userAgent.match(/Debug/) !== null ? 'auto' : 'md',
 	disabled: false,
-	version: "1.13.8",
+	version: "1.14.0",
 	// theme: 'ios',
 
 	statusbar: {
@@ -148,12 +149,37 @@ const app = new Framework7({
 				return;
 			}
 
+			let dialog;
+			try {
+				await migrate((progress) => {
+					if (!dialog) {
+						dialog = app.dialog.progress(
+							`
+								Обновление базы данных.<br>
+								Пожалуйста, подождите
+							`,
+							Math.round(progress)
+						);
+					}
+					dialog.setProgress(Math.round(progress));
+				});
+			} catch(ex) {
+				console.error(ex);
+				this.methods.showLoadError(`
+					Ошибка обновления базы данных: [${ex.name}]: ${ex.message}
+				`, 10000);
+			}
+			if (dialog) {
+				dialog.close();
+			}
+
 			try {
 				await dataManager.init();
 			} catch(ex) {
+				console.error(ex);
 				this.methods.showLoadError(`
-					Ошибка при инициализации данных: [${ex.name}]: ${ex.message}
-				`, 30000);
+					Ошибка инициализации данных: [${ex.name}]: ${ex.message}
+				`, 10000);
 			}
 
 			if (window['webkit']) {
@@ -173,8 +199,8 @@ const app = new Framework7({
 
 			viewsManager.init(this);
 
-			if(this.device.ios && parseInt(this.device.osVersion) === 10)
-				this.$('html').addClass('ios-statusbar');
+			// if(this.device.ios && parseInt(this.device.osVersion) === 10)
+			// 	this.$('html').addClass('ios-statusbar');
 
 			// this.emit('onWindowInsets', this.data.settings['windowInsets']);
 
@@ -245,7 +271,7 @@ const app = new Framework7({
 			});
 		},
 		showLoadError(msg, timeout) {
-			this.methods.showError(msg ||	'Ошибка загрузки данных');
+			this.methods.showError(msg ||	'Ошибка загрузки данных', timeout);
 		},
 		storageGet(key) {
 			key = this.id + '_' + key;
