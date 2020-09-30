@@ -47,6 +47,7 @@ export default function getList() {
 			row_size: 59.6 * 1024,
 			sources: [
 				new Calendar(),
+				new Prayers(),
 				new DaysList({
 					from_date: format(startOfYear(addYears(new Date, 1))),
 					to_date:  format(endOfYear(addYears(new Date, 1))) // Следующий год
