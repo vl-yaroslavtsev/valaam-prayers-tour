@@ -47,15 +47,13 @@ let dataSize = {
 async function migrate(progessCb = () => {}) {
   await db.open();
   let state = (await db.state.get('db-migrate')) || {id: 'db-migrate'};
-  if (state.done) {
+  if (state.done || state.error) {
     return;
   }
 
 	try {
 		oldIdb = await openDB(OLD_DB_NAME);
 	  if (oldIdb.objectStoreNames.length === 0) {
-			oldIdb.close();
-			deleteDB(OLD_DB_NAME);
 			return;
 		}
 		progessCb(0);
@@ -97,24 +95,22 @@ async function migrate(progessCb = () => {}) {
 	    progessCb(40 + progress * 0.6);
 	  });
 
-		oldIdb.close();
-		deleteDB(OLD_DB_NAME);
-
 		state.done = true;
 		state.date = new Date;
 		await db.state.put(state);
 
 	} catch (error) {
-		if (error.name === 'QuotaExceededError') {
-			oldIdb.close();
-			deleteDB(OLD_DB_NAME);
-		}
 
 		state.error = error;
 		state.date = new Date;
 		await db.state.put(state);
 
 		throw error;
+	} finally {
+		if (oldIdb) {
+			oldIdb.close();
+		}
+		deleteDB(OLD_DB_NAME);
 	}
 }
 
