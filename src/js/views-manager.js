@@ -22,18 +22,18 @@ function init(appInstance) {
  */
 function parseHash() {
 	let [viewId = '#view-prayers', url] = document.location.hash.split(':');
-	
+
 	if (!viewsIds.includes(viewId)) return;
 
 	app.tab.show(viewId);
-	
+
 	let view = app.views.get(viewId);
 
-	console.log('parseHash', view);
+	//console.log('parseHash', view);
 	// if (!view) {
 		// view = createView(viewId);
 	// }
-	
+
 	if (url) {
 		view.router.navigate(url);
 		document.location.hash = viewId;
@@ -45,16 +45,16 @@ function parseHash() {
  */
 function initViewTabs() {
 	location.hash = location.hash || '#view-prayers';
-	
+
 	app.root.find('.views.tabs').on('tab:show', (event) => {
 		let id = event.target.id;
 		if (!id || !id.startsWith('view-'))
 		 	return;
-		
+
 		if (!location.hash.startsWith('#' + id)) {
 			location.hash = '#' + id;
 		}
-		
+
 		createView('#' + id);
 	});
 
@@ -65,7 +65,7 @@ function initViewTabs() {
 		let $target = $$(this);
 		app.tab.show($target.data('view'));
 	});
-	
+
 	//app.tab.show(location.hash.split(':')[0]);
 
 	parseHash();
