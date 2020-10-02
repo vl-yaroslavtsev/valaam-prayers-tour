@@ -112,6 +112,7 @@
 
 	const PRAYERS_SID = "842"; // Полный молитвослов
 	const LITURGICAL_BOOKS_SID = "937"; // Богослужебные книги
+	const BOOKS_SID = "976"; // Духовная литература
 
 	let app;
 
@@ -277,7 +278,7 @@
 			}
 		});
 	}
-	
+
 	/**
 	 * Обновляем значения VirtualList
 	 * @this {F7Component}
@@ -285,14 +286,14 @@
 	async function updateReadProgress(page) {
 		let prevRoute = page.router.previousRoute;
 		if (prevRoute.route.path != "/prayers/text/:id") return;
-		
-		let prayerId = prevRoute.params.id;		
+
+		let prayerId = prevRoute.params.id;
 		let item = this.virtualList.items.find(({id}) => id === prayerId);
 		if (!item) return;
-		
+
 		let record = await db.read_history.get(prayerId);
 		if (!record) return;
-		
+
 		item.read_progress = record.progress;
 		this.virtualList.replaceItem(this.virtualList.items.indexOf(item), item);
 	}
@@ -309,8 +310,15 @@
 				}));
 			}
 
-			// Временно: добавляем Богослужебные книги (937) Полный молитвослов (842)
+			// Временно: добавляем Богослужебные книги (937) в Полный молитвослов (842)
 			if (sectionId === PRAYERS_SID && data.id === LITURGICAL_BOOKS_SID) {
+				items.push(Object.assign(data, {
+					href: '/prayers/' + data.id
+				}));
+			}
+
+			// Временно: добавляем Духовную литературу в Полный молитвослов (842)
+			if (sectionId === PRAYERS_SID && data.id === BOOKS_SID) {
 				items.push(Object.assign(data, {
 					href: '/prayers/' + data.id
 				}));
