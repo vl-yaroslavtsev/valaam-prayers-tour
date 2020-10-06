@@ -28,6 +28,8 @@
 	--calendar-desc-circle-width: 24px;
 	--calendar-border-bottom-width: 2px;
 	--calendar-padding-bottom: 21px;
+
+	--f7-calendar-today-text-color: rgb(60, 141, 197);
 }
 
 .calendar-inline {
@@ -68,7 +70,7 @@
 
 .calendar-day-today .calendar-day-number {
   box-sizing: border-box;
-  border: 2px solid var(--f7-theme-color);
+  border: 2px solid var(--f7-calendar-today-text-color);
   line-height: calc(-2px + var(--f7-calendar-day-size));
 }
 
