@@ -70,6 +70,31 @@ function initViewTabs() {
 
 	parseHash();
 	$$(window).on('hashchange', parseHash);
+
+	app.on('pageInit', (page) => {
+		handleScrollbar(page.$el);
+	});
+}
+
+function handleScrollbar($el) {
+	let timer;
+	if ($el.hasClass('read-mode')) {
+		return;
+	}
+	let $content = $el.find('.page-content');
+
+	$el.addClass('scrollbar-hidden');
+	$content.on('scroll', () => {
+		if (timer) {
+			clearTimeout(timer);
+		} else {
+			$el.removeClass('scrollbar-hidden');
+		}
+		timer = setTimeout(() => {
+			$el.addClass('scrollbar-hidden');
+			timer = null;
+		}, 800);
+	});
 }
 
 /**
