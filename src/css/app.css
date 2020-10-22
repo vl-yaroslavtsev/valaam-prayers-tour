@@ -57,7 +57,11 @@ body,
 }
 
 .page-content {
+<<<<<<< HEAD
 	background-color: var(--scrollbar-thumb-hidden-color);
+=======
+	background-color: rgba(255, 255, 255, 0);
+>>>>>>> f293bd6a48c0cce3c23cfff01ad6b470054fad52
 	-webkit-background-clip: text;
 	transition: background-color .8s;
 }
