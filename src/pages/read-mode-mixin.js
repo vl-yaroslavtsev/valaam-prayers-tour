@@ -118,17 +118,25 @@ class ReadMode extends StateStore {
 			return;
 		}
 
-		let scroll = $content.scrollTop() / $content[0].scrollHeight;
+		if (this.historyUpdateTimer) {
+			clearTimeout(this.historyUpdateTimer);
+			this.historyUpdateTimer = null;
+		}
 
-		Object.assign(this.history, {
-			scroll,
-			progress: (this.page == this.pages) ? '100' : Math.round(scroll * 100).toString(),
-			date: new Date(),
-			parent_id: this.context.parent,
-			page: this.page,
-			pages: this.pages,
-		});
-		await db.read_history.put(this.history);
+		this.historyUpdateTimer = setTimeout(async () => {
+			let scroll = $content.scrollTop() / $content[0].scrollHeight;
+
+			Object.assign(this.history, {
+				scroll,
+				progress: (this.page == this.pages) ? '100' : Math.round(scroll * 100).toString(),
+				date: new Date(),
+				parent_id: this.context.parent,
+				page: this.page,
+				pages: this.pages,
+			});
+
+			await db.read_history.put(this.history);
+		}, 300);
 	}
 
 
@@ -373,20 +381,30 @@ class ReadMode extends StateStore {
 }
 
 export default {
-	data()  {
+	// data()  {
+	// },
+	beforeCreate() {
+		if (this.denyReadMode) {
+			return;
+		}
 		this.readMode = new ReadMode(this);
 	},
 	methods: {
 		tutorial() {
+			if (!this.readMode) {
+				return;
+			}
 			this.readMode.showTutorial();
 		}
 	},
 	on: {
 		pageInit(e, page) {
+			if (!this.readMode) {
+				return;
+			}
 			if (!app) {
 				app = page.app;
 			}
-
 			this.readMode.init();
 		},
 
@@ -400,6 +418,9 @@ export default {
 		},
 
 		pageBeforeRemove(e, page) {
+			if (!this.readMode) {
+				return;
+			}
 			this.readMode.destroy();
 		}
 	}
