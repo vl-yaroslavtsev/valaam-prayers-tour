@@ -2,6 +2,7 @@
  * Обработка главный view приложения
  */
 import {Dom7 as $$} from 'framework7';
+import { isMobile, animate } from './utils/utils.js';
 
 let app;
 const viewsIds = [
@@ -76,23 +77,51 @@ function initViewTabs() {
 	});
 }
 
-function handleScrollbar($el) {
-	let timer;
-	if ($el.hasClass('read-mode')) {
+/**
+ * Показываем/скрываем скроллбар
+ * @param  {Dom7} $page страница
+ */
+function handleScrollbar($page) {
+	let timer, lastScroll, cancel;
+	if ($page.hasClass('read-mode')) {
 		return;
 	}
-	let $content = $el.find('.page-content');
-
+	const $content = $page.find('.page-content');
+	const scrollbarShownAlpha = getComputedStyle($page[0]).getPropertyValue('--scrollbar-thumb-shown-alpha');
 	$content.on('scroll', () => {
+		lastScroll = performance.now();
+
 		if (timer) {
-			clearTimeout(timer);
-		} else {
-			$el.addClass('scrollbar-visible');
+			return;
 		}
-		timer = setTimeout(() => {
-			$el.removeClass('scrollbar-visible');
+
+		if (cancel) {
+			cancel();
+		}
+
+		const style = $page[0].style;
+		style.setProperty('--scrollbar-thumb-alpha', scrollbarShownAlpha);
+
+		timer = setTimeout( function hide() {
+			const diff = Math.round(performance.now() - lastScroll);
+			if (diff < 800) {
+				 timer = setTimeout( hide, 800 - diff);
+				 return;
+			}
+
+			cancel = animate({
+				draw(progress) {
+					const val = parseFloat(scrollbarShownAlpha) * (1 - progress);
+					style.setProperty('--scrollbar-thumb-alpha', `${val.toFixed(3)}`);
+				},
+				duration: 800,
+				end() {
+					cancel = null;
+				}
+			});
+
 			timer = null;
-		}, 500);
+		}, 800);
 	});
 }
 
