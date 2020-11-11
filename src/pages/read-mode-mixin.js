@@ -160,7 +160,7 @@ class ReadMode extends StateStore {
 	async update() {
 		let $content = this.$content
 		this.countPages();
-
+		$content.css('visibility', 'hidden');
 		await this.historyPromise;
 		if (this.history.scroll) {
 			this.initScroll = true;
@@ -174,6 +174,7 @@ class ReadMode extends StateStore {
 		this.range.max = this.pages;
 		this.range.setValue(this.page);
 
+		$content.css('visibility', 'visible');
 		this.context.$update();
 	}
 
