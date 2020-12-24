@@ -16,7 +16,7 @@ import db from '../data/db.js';
 import downloadItemsList from './items.js';
 
 const BASE_URL = 'https://valaam.ru';
-const API_URL = 'https://valaam.ru/phonegap/';
+const API_URL = 'https://valaam.ru/phonegap.tour/';
 
 let manager;
 

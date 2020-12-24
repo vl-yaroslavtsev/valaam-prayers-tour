@@ -1,6 +1,6 @@
 import DataSource from './source.js';
 
-const API_URL = 'https://valaam.ru/phonegap/';
+const API_URL = 'https://valaam.ru/phonegap.tour/';
 
 export default [
 	new DataSource({

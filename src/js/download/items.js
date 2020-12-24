@@ -24,7 +24,7 @@ import {
 	SaintsIcons
 } from './sources';
 
-const API_URL = 'https://valaam.ru/phonegap/';
+const API_URL = 'https://valaam.ru/phonegap.tour/';
 
 export default function getList() {
 	return [
