@@ -3,6 +3,7 @@ import 'framework7/css/framework7.css';
 import 'framework7/components/dialog.css';
 import 'framework7/components/popup.css';
 import 'framework7/components/popover.css';
+import 'framework7/components/sheet.css';
 import 'framework7/components/toast.css';
 import 'framework7/components/preloader.css';
 import 'framework7/components/progressbar.css';
@@ -35,6 +36,7 @@ import Framework7, {Dom7 as $$} from 'framework7';
 import Dialog	    from 'framework7/components/dialog/dialog.js';
 import Popup	    from 'framework7/components/popup/popup.js';
 import Popover 		from 'framework7/components/popover/popover';
+import Sheet      from 'framework7/components/sheet/sheet.js';
 import Toast        from 'framework7/components/toast/toast.js';
 import Preloader    from 'framework7/components/preloader/preloader.js';
 import Progressbar  from 'framework7/components/progressbar/progressbar.js';
@@ -67,6 +69,7 @@ Framework7.use([
 	Autocomplete,
 	Calendar,
 	Dialog,
+	Sheet,
 	Elevation,
 	Form,
 	InfiniteScroll,
@@ -116,7 +119,7 @@ const app = new Framework7({
 	name: 'Валаамский молитвослов',
 	theme: navigator.userAgent.match(/Debug/) !== null ? 'auto' : 'md',
 	disabled: false,
-	version: "1.15.1",
+	version: "1.16.1",
 	// theme: 'ios',
 
 	statusbar: {
