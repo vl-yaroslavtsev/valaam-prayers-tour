@@ -155,7 +155,6 @@ const app = new Framework7({
 
       let dialog;
       try {
-        console.log("migrate", new Date());
         await migrate((progress) => {
           if (!dialog) {
             dialog = app.dialog.progress(
@@ -182,7 +181,6 @@ const app = new Framework7({
       }
 
       try {
-        console.log("dataManager.init() ", new Date());
         await dataManager.init();
       } catch (ex) {
         console.error(ex);
