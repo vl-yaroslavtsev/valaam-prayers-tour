@@ -144,7 +144,8 @@ const app = new Framework7({
   on: {
     // эти функции не должны быть асинхронными - сбивается порядок выполнения - потом концов не найдёте
     async init() {
-      await idbReady(this.device.ios && this.device.osVersion === "14.6");
+      /** && this.device.osVersion === "14.6" */
+      await idbReady(this.device.ios);
 
       utilsInit(this);
 
