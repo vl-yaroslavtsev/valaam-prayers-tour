@@ -67,6 +67,10 @@
 				<div class="block-footer">
 					Пометка к имени: младенца, воина, иерея, протоиерея и т.д.
 				</div>
+				<div class="block">
+					<button  @click="goBack"
+							 class="button button-fill button-gradient button-large">Добавить имя</button>
+				</div>
 			</div>
 		</div>
 
@@ -105,6 +109,11 @@
 				name: [$name.find('.item-title').text(), $name.find('.item-after').text()],
 				explanations: ritesConfig.explanations
 			};
+		},
+		methods: {
+			goBack() {
+				this.$router.back();
+			}
 		},
 		on: {
 			pageBeforeOut(e, page) {
