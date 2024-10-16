@@ -101,13 +101,15 @@
 				app = this.$app,
 				ritesConfig = dataManager.cache.ritesConfig,
 				$name = this.$$('#rite-name-' + idx),
-				$ss = app.smartSelect.get('.vm-rites-rite .smart-select')
+				{explanationsCommon, explanationsAlive, explanationsDead, rites} = ritesConfig,
+				$ss = app.smartSelect.get('.vm-rites-rite .smart-select'),
+				ritesItem = rites.find(({id}) => id === $ss.getValue())
 			;
 
 			return {
-				title: ritesConfig.rites.find(({id}) => id === $ss.getValue()).name.split(' - ')[0],
+				title: ritesItem.name.split(' - ')[0],
 				name: [$name.find('.item-title').text(), $name.find('.item-after').text()],
-				explanations: ritesConfig.explanations
+				explanations: explanationsCommon.concat(ritesItem.type === "4" ? explanationsAlive : explanationsDead).sort()
 			};
 		},
 		methods: {
@@ -122,17 +124,18 @@
 					ritesConfig = dataManager.cache.ritesConfig,
 					$name = this.$$('#rite-name-' + idx),
 					name = page.$el.find('#autocomplete-names').val().trim(),
-					explanations = page.$el.find('#autocomplete-explanations').val().trim()
+					explanations = this.explanations,
+					inputExplanation = page.$el.find('#autocomplete-explanations').val().trim()
 				;
 
 				if(page.$el.find('#autocomplete-names').hasClass('input-invalid'))
 					name = '';
 
-				if(ritesConfig.explanations.indexOf(explanations) === -1 || name === '')
-					explanations = '';
+				if(explanations.indexOf(inputExplanation) === -1 || name === '')
+					inputExplanation = '';
 
 				$name.find('.item-title').text(name);
-				$name.find('.item-after').text(explanations);
+				$name.find('.item-after').text(inputExplanation);
 
 				if(name) this.$$('.vm-rites-names.list #rite-name-' + idx).next().removeClass('display-none');
 			},

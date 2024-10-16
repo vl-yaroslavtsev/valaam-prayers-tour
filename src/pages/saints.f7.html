@@ -86,30 +86,32 @@
 				</div>
 				{{/if}}
 
-				{{#if days.length}}
+				{{#if memo_days.length}}
 				<div class="block-title">
 					{{#if isSaint}}Дни памяти{{else}}Празднование{{/if}}
 				</div>
 
 				<div class="list media-list no-hairlines-md">
 					<ul>
-						{{#each days}}
-						<li>
-							<a href="/days/{{date}}" class="item-link item-content">
-								<div class="item-inner">
-									<div class="item-title-row">
-										<div class="item-title">{{title}}</div>
-										{{#if is_movable}}
-										<div class="item-after">переходящая</div>
+						{{#if memo_days_list}}
+							{{#each memo_days_list}}
+							<li>
+								<a href="/days/{{date}}" class="item-link item-content">
+									<div class="item-inner">
+										<div class="item-title-row">
+											<div class="item-title">{{title}}</div>
+											{{#if is_relative}}
+												<div class="item-after">переходящая</div>
+											{{/if}}
+										</div>
+										{{#if description}}
+											<div class="item-text">{{description}}</div>
 										{{/if}}
 									</div>
-									{{#if description}}
-									<div class="item-text">{{description}}</div>
-									{{/if}}
-								</div>
-							</a>
-						</li>
-						{{/each}}
+								</a>
+							</li>
+							{{/each}}
+						{{/if}}
 					</ul>
 				</div>
 				{{/if}}
@@ -203,15 +205,15 @@
 </style>
 <!--suppress JSAnnotator -->
 <script>
-	import {format, parse, addDays, subDays} from '../js/utils/date-utils.js';
+	import {format, parse, addDays, subDays, parseRelative} from '../js/utils/date-utils.js';
 	import dataManager from '../js/data/manager.js';
 	import { getUrl } from '../js/image-manager.js';
 
 	export default {
 		async data() {
-			let prayers = dataManager.cache.prayers;
+			const prayers = dataManager.cache.prayers;
 
-			let saintData = Object.assign({}, this.saint);
+			const saintData = {... this.saint};
 
 			if (saintData.picture) {
 				saintData.picture = await getUrl({
@@ -254,12 +256,28 @@
 
 				element = Object.assign({}, element);
 
-				let section = prayers.s.find((s) => s.id === element.parent);
-				let dt = parse(format(new Date(), 'yyyy') + section.code, 'yyyyMMdd');
+				let code;
 
-				element.header = format(dt, 'd MMMM') +
+				if (element.code) {
+					code = element.code;
+				} else {
+					const section = prayers.s.find((s) => s.id === element.parent);
+					code = section.code;
+				}
+				
+				if (code) {
+					const dt = parseRelative(code);
+					element.header = format(subDays(dt, 13), 'd MMMM') +
 							 ' / ' +
-							 format(addDays(dt, 13), 'd MMMM');
+							 format(dt, 'd MMMM');
+				}
+				
+				//const dt = parse(format(new Date(), 'yyyy') + section.code, 'yyyyMMdd');
+				// if (isNaN(dt)) {
+				// 	return element;
+				// }
+
+				
 				return element;
 			});
 
@@ -271,6 +289,27 @@
 			}
 
 			saintData.searchMode = this.$route.query.mode === 'search';
+
+			if (saintData.memo_days) {
+				saintData.memo_days_list = saintData.memo_days.map((day) => {
+					let dt;
+					if (day.date_template) {
+						dt = parseRelative(day.date_template);
+					} else if (day.date_ts) {
+						dt = new Date(day.date_ts * 1000);
+					}
+					
+					const date = format(dt, 'yyyyMMdd');
+					const title = format(subDays(dt, 13), 'd MMMM') +
+								  ' / ' +
+								  format(dt, 'd MMMM');
+					return {
+						...day,
+						date,
+						title,
+					};
+				});
+			}			
 
 			return saintData;
 		},

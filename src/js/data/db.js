@@ -37,8 +37,8 @@ function registerStores(idb) {
 db.open = async function() {
 	if (idb) return idb;
 
-	idb = await openDB('phonegap', 4, {
-		upgrade(db, oldVersion, newVersion, transaction) {
+	idb = await openDB('phonegap', 8, {
+		async upgrade(db, oldVersion, newVersion, transaction) {
 			switch(oldVersion) { // существующая (старая) версия базы данных
 		    case 0:
 				db.createObjectStore('collections');
@@ -52,16 +52,35 @@ db.open = async function() {
 				transaction.objectStore('prayers').createIndex('by-root-id', 'root_id');
 				transaction.objectStore('images').createIndex('by-source-id', 'source_id');
 
-				case 1:
+			case 1:
 				db.createObjectStore('read_history', {keyPath: 'id'});
 				transaction.objectStore('read_history').createIndex('by-date', 'date');
 
-				case 2:
+			case 2:
 				transaction.objectStore('read_history').createIndex('by-book-id', 'book_id');
 
-				case 3:
+			case 3:
 				transaction.objectStore('read_history').createIndex('by-parent-id', 'parent_id');
 
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				let cursor = await transaction.objectStore('days').openCursor();
+				while (cursor) {
+					if (cursor.value.readers_text) {
+			
+						const day = { ...cursor.value };
+						day.readings = day.readers;
+						day.readings_text = day.readers_text.replace(/\/days\/\d+\/readers\//ig, '/readings/');
+						delete day.readers;
+						delete day.readers_text;
+			
+						cursor.update(day);
+					}
+			
+					cursor = await cursor.continue();
+				}
 			}
 		},
 		blocked() {

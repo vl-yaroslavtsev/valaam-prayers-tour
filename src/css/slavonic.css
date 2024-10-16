@@ -32,6 +32,36 @@
 	text-align: center;
 }
 
+.slavonic h3 {
+	color: var(--kinovar-color);
+	font-weight: inherit; /*bold;*/
+	text-align: center;
+	font-size: 1.05em;
+}
+
+.slavonic h4 {
+	color: var(--kinovar-color);
+	font-weight: inherit; /*bold;*/
+	text-align: center;
+	margin: 1em 0 0 0;
+}
+
+.slavonic h5 {
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	font-size: 1em;
+	margin: 1em 0 0 0;
+}
+
+.slavonic h6 {
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	font-size: 0.8em;
+	margin: 0.2em 0 0 1em;
+}
+
 .churchslavonic {
 	font-family: Triodion, serif;
 	font-size: 1.5em;
@@ -47,6 +77,34 @@
 
 .churchslavonic p:first-child {
     margin-top: 0;
+}
+
+.churchslavonic h3 {
+	color: var(--kinovar-color);
+	font-weight: inherit; /*bold;*/
+	text-align: center;
+	font-size: 1.05em;
+}
+
+.churchslavonic h4 {
+	color: var(--kinovar-color);
+	font-weight: inherit; /*bold;*/
+	text-align: center;
+	margin: 1ex 0 0 0;
+}
+
+.churchslavonic h5 {
+	font-weight: normal;
+	text-align: center;
+	font-size: 1em;
+	margin: 1ex 0 0 0;
+}
+
+.churchslavonic h6 {
+	font-weight: normal;
+	text-align: center;
+	font-size: 0.8em;
+	margin: 0.2ex 0 0 1ex;
 }
 
 .churchslavonic b,

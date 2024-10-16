@@ -7,6 +7,8 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
 
+
+
 module.exports = (env = {}) => {
 	const devMode = !env.production;
 	const useHash = env.hash;
@@ -80,8 +82,8 @@ module.exports = (env = {}) => {
 				{
 					test: /\.m?js$/,
 					exclude: [			
-						/node_modules\/(?!(framework7|template7|dom7|lodash-es|date-fns|idb)\/).*/,
-						/\/js\/sw-template\.js$/
+						/node_modules\\(?!(framework7|template7|dom7|lodash-es|date-fns|idb)\\).*/,
+						/\\js\\sw-template\.js$/
 					],
 					//include: path.resolve(__dirname, 'src'),
 					use: {

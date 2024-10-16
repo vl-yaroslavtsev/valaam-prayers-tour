@@ -124,6 +124,14 @@
 .theme-dark .text-content:not(.slavonic) h2 {
 	color: var(--f7-block-strong-text-color);
 }
+
+.text-content hr {
+    margin: 1rem 0;
+    color: inherit;
+    border: 0;
+    border-top: 1px solid;
+    opacity: .25;
+}
 /* endregion */
 
 @media (min-width: 768px) {

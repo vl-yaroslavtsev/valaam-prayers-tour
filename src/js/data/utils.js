@@ -15,6 +15,7 @@ function isPrayerInSection(prayerId, parents) {
 	if (!prayer)
 		return 0;
 
+	
 	return prayersParents(prayer.parent, parents, 1);
 }
 

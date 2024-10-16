@@ -1,0 +1,131 @@
+<template>
+	<div class="page page-with-tabs-subnavbar" data-name="day-readings-{{id}}">
+
+		<div class="navbar navbar-collapse">
+			<div class="navbar-bg"></div>
+			<div class="navbar-inner sliding">
+				<div class="left">
+					<a href="#" class="link back">
+						<i class="icon icon-back"></i>
+						<span class="">Назад</span>
+					</a>
+				</div>
+				<div class="title">{{name}}</div>
+				<div class="right">
+					<a class="link smart-select smart-select-init"
+						 data-open-in="popover"
+						 data-close-on-select="true">
+						<select id="select-language"
+ 										@change="selectLanguage">
+ 							{{#each languages}}
+ 								<option value="{{id}}"
+ 											  {{#js_if "this.id == @root.language.id"}}selected{{/js_if}}>
+ 									{{name}}
+ 							</option>
+ 							{{/each}}
+ 						</select>
+						<i class="icon material-icons md-only">translate</i>
+					</a>
+					{{#if searchMode}}
+					<!--<a class="link popup-close">Закрыть</a>-->
+					{{else}}
+						{{> "navbar-right"}}
+					{{/if}}
+				</div>
+			</div>
+		</div>
+
+		<div class="page-content">
+			<div class="page-title">
+				{{name}}
+			</div>
+			<div class="subnavbar tabs-subnavbar">
+				<div class="subnavbar-inner">
+					<div class="segmented segmented-raised">
+						<a class="button tab-link" href="#" data-tab=".page[data-name='day-readings-{{id}}'] #tab-churchslavonic">Церковнославянский</a>
+						<a class="button tab-link" href="#" data-tab=".page[data-name='day-readings-{{id}}'] #tab-slavonic">Русский</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="tabs">
+				<div class="tab" id="tab-churchslavonic">
+					<div class="block block-strong inset churchslavonic-ereader">{{churchslavonicText}}</div>
+				</div>
+				<div class="tab" id="tab-slavonic">
+					<div class="block block-strong inset slavonic-ereader text-content">{{slavonicText}}</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</template>
+
+<style scoped>
+	/* .navbar-bg {
+		height: var(--f7-navbar-height);
+	} */
+</style>
+<!--suppress JSAnnotator -->
+<script>
+	import { languages, langById } from '../js/data/languages.js';
+
+	export default {
+		data() {
+			let app = this.$app,
+			  dayCode = this.$route.params.id,
+				readingId = (this.$route.context && this.$route.context.actionId) || this.$route.params.readingId,
+				readingData = {
+					textSettings: true,
+					languages,
+					language:	langById(app.methods.storageGet('readings-text-language') ||
+														 'slavonic')
+				},
+				text;
+
+			Object.assign(
+				readingData,
+				this.day.readings.find(({id}) => id === readingId)
+			);
+
+			text = readingData.text.split('\n');
+			text = text.filter((a) => a.startsWith('#c#'));
+			text = text.map((a) => {
+				return a.replace(/#c#(\d+:\d+)/, '<span class="text-color-red">$1</span>');
+			});
+			readingData.churchslavonicText = text.join('<br>');
+
+			text = readingData.text.split('\n');
+			text = text.filter((a) => a.startsWith('#r#'));
+			text = text.map((a) => {
+				return a
+					.replace(/#r#(\d+:\d+)/, '<span class="text-color-red">$1</span>')
+					.replace(/\[(Зач\. \d+)\]/g, '[<span class="text-color-red">$1</span>]')
+					.replace(/_(.*?)_/g, '<i>$1</i>')
+					;
+			});
+			readingData.slavonicText = text.join('<br>');
+
+			readingData.searchMode = this.$route.query.mode === 'search';
+
+			return readingData;
+		},
+		methods: {
+			selectLanguage({target}) {
+				this.language = langById(target.value);
+				app.tab.show(this.$el.find('#tab-' + this.language.id));
+			}
+		},
+		on: {
+			pageInit(e, page) {
+				app.tab.show(page.$el.find('#tab-' + this.language.id));
+
+				page.$el.find('.tabs').on('tab:show', (event) => {
+					this.language = langById(event.target.id.replace('tab-', ''));
+					app.methods.storageSet('readings-text-language', this.language.id);
+					this.$update();
+				});
+		  }
+		},
+	};
+</script>

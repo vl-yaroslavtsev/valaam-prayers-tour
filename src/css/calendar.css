@@ -7,15 +7,15 @@
 
 	--calendar-week-bg:      rgb(251,244,228); /* rgba(240,214,154, .7); */ /* rgb(244, 226, 184) */
 	--calendar-desc-week-bg: rgba(240,214,154, .6);
-	--dark-calendar-week-bg: rgb(110, 100, 76); /* rgba(240,214,154, .4) */
+	--dark-calendar-week-bg: rgb(159, 146, 125); /* rgba(240,214,154, .4) */
 
-	--calendar-valaam-bg:      rgba(186,223,185,0.7);
+	--calendar-valaam-bg:      rgb(206,232,206); /*rgba(186,223,185,0.7);*/
 	--calendar-desc-valaam-bg: rgb(186,223,185);
-	--dark-calendar-valaam-bg: rgba(186,223,185,0.7);
+	--dark-calendar-valaam-bg: rgb(136,162,135);
 
-	--calendar-holiday-bg:      rgba(255,161,154, .9); /* rgba(240,161,154, 0.7) */
+	--calendar-holiday-bg:      rgb(255,170,163); /*rgba(255,161,154, .9);*/ /* rgba(240,161,154, 0.7) */
 	--calendar-desc-holiday-bg: rgb(255,161,154);
-	--dark-calendar-holiday-bg: rgba(255,161,154, .9); /* rgba(240,161,154, 0.7) */
+	--dark-calendar-holiday-bg: rgb(232, 147, 141); /* rgba(240,161,154, 0.7) */
 
 	--calendar-commemoration-border:      rgb(151,151,151);
 	--calendar-desc-commemoration-border: rgb(151,151,151);
@@ -23,13 +23,40 @@
 
 	--calendar-easter-bg:      rgba(255, 0, 0, .7);
 	--calendar-desc-easter-bg: rgba(255, 0, 0, .7);
-	--dark-calendar-easter-bg: rgba(255, 0, 0, .7);
+	--dark-calendar-easter-bg: rgb(187, 8, 9);
 
 	--calendar-desc-circle-width: 24px;
 	--calendar-border-bottom-width: 2px;
 	--calendar-padding-bottom: 21px;
 
 	--f7-calendar-today-text-color: rgb(60, 141, 197);
+
+	--calendar-weekend-color: rgba(186,18,18,.7);
+	--dark-calendar-weekend-color: rgb(122, 28, 28);;
+}
+
+
+.theme-dark {
+	--calendar-fasting-bg: var(--dark-calendar-fasting-bg);
+	--calendar-desc-fasting-bg: var(--dark-calendar-fasting-bg);
+
+	--calendar-week-bg: var(--dark-calendar-week-bg);
+	--calendar-desc-week-bg: var(--dark-calendar-week-bg);
+
+
+	--calendar-valaam-bg:      var(--dark-calendar-valaam-bg);
+	--calendar-desc-valaam-bg: var(--dark-calendar-valaam-bg);
+
+	--calendar-holiday-bg:      var(--dark-calendar-holiday-bg);
+	--calendar-desc-holiday-bg: var(--dark-calendar-holiday-bg);
+
+	--calendar-commemoration-border:      var(--dark-calendar-commemoration-border);
+	--calendar-desc-commemoration-border: var(--dark-calendar-commemoration-border);
+
+	--calendar-easter-bg:      var(--dark-calendar-easter-bg);
+	--calendar-desc-easter-bg: var(--dark-calendar-easter-bg);
+
+	--calendar-weekend-color: var(--dark-calendar-weekend-color);
 }
 
 .calendar-inline {
@@ -141,12 +168,25 @@ a.link.calendar-next-year-button {
     background-color: var(--f7-calendar-selected-bg-color,var(--f7-theme-color)) !important;
 }
 
-.vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
-	background-color: var(--calendar-fasting-bg);
+.vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
+	background-color:  var(--calendar-week-bg);
 }
 
-.theme-dark .vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
-	background-color: var(--dark-calendar-fasting-bg);
+.vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
+	content: '';
+	position: absolute;
+	left: -50%;
+	height: var(--f7-calendar-day-size);
+	width: 100%;
+	background-color:  var(--calendar-week-bg);
+}
+
+.vm-calendar-day-description .vm-calendar-day-week {
+	background-color: var(--calendar-desc-week-bg);
+}
+
+.vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
+	background-color: var(--calendar-fasting-bg);
 }
 
 .vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
@@ -159,37 +199,8 @@ a.link.calendar-next-year-button {
 	background-color: var(--calendar-fasting-bg);
 }
 
-.theme-dark .vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-fasting:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
-	background-color: var(--dark-calendar-fasting-bg);
-}
-
 .vm-calendar-day-description .vm-calendar-day-fasting {
 	background-color: var(--calendar-desc-fasting-bg);
-}
-
-.vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
-	background-color:  var(--calendar-week-bg);
-}
-
-.theme-dark .vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
-	background-color: var(--dark-calendar-week-bg);
-}
-
-.vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
-	content: '';
-	position: absolute;
-	left: -50%;
-	height: var(--f7-calendar-day-size);
-	width: 100%;
-	background-color:  var(--calendar-week-bg);
-}
-
-.theme-dark  .vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-week:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
-	background-color: var(--dark-calendar-week-bg);
-}
-
-.vm-calendar-day-description .vm-calendar-day-week {
-	background-color: var(--calendar-desc-week-bg);
 }
 
 .vm-calendar-day-valaam:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
@@ -227,26 +238,14 @@ a.link.calendar-next-year-button {
 	border: solid 2px var(--calendar-commemoration-border);
 }
 
-.theme-dark .vm-calendar-day-commemorationdead:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
-	border-color: var(--dark-calendar-commemoration-border);
-}
-
 .vm-calendar-day-description .vm-calendar-day-commemorationdead {
 	border: solid 2px var(--calendar-desc-commemoration-border);
-}
-
-.theme-dark .vm-calendar-day-description .vm-calendar-day-commemorationdead {
-	border-color: var(--dark-calendar-commemoration-border);
 }
 
 .vm-calendar-day-lightweek:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
 	color: rgba(186,18,18,.7) !important; /* rgba(186,18,18,.56) */
 	background-color: var(--calendar-week-bg);
 	font-weight: bold;
-}
-
-.theme-dark .vm-calendar-day-lightweek:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
-	background-color: var(--dark-calendar-week-bg);
 }
 
 .vm-calendar-day-lightweek:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-lightweek:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
@@ -256,10 +255,6 @@ a.link.calendar-next-year-button {
 	height: var(--f7-calendar-day-size);
 	width: 100%;
 	background-color: var(--calendar-week-bg);
-}
-
-.theme-dark .vm-calendar-day-lightweek:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) + .vm-calendar-day-lightweek:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next):before {
-	background-color: var(--dark-calendar-week-bg);
 }
 
 .vm-calendar-day-easter:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) .calendar-day-number {
@@ -273,8 +268,10 @@ a.link.calendar-next-year-button {
 }
 
 .calendar-day.calendar-day-weekend:not(.calendar-day-disabled):not(.calendar-day-prev):not(.calendar-day-next) {
-	color: rgba(186,18,18,.7); /* rgba(186,18,18,.56) */
+	color: var(--calendar-weekend-color);
 }
+
+/* #7A1C1C; */
 /* endregion */
 
 @media (min-width: 768px) {

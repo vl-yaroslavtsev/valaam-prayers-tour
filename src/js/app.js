@@ -15,6 +15,7 @@ import "framework7/components/form.css";
 import "framework7/components/input.css";
 import "framework7/components/radio.css";
 import "framework7/components/toggle.css";
+import "framework7/components/checkbox.css";
 import "framework7/components/range.css";
 import "framework7/components/stepper.css";
 import "framework7/components/smart-select.css";
@@ -47,6 +48,7 @@ import Form from "framework7/components/form/form.js";
 import Input from "framework7/components/input/input.js";
 import Radio from "framework7/components/radio/radio.js";
 import Toggle from "framework7/components/toggle/toggle.js";
+import Checkbox from "framework7/components/checkbox/checkbox.js";
 import Range from "framework7/components/range/range.js";
 import Stepper from "framework7/components/stepper/stepper.js";
 import SmartSelect from "framework7/components/smart-select/smart-select.js";
@@ -108,7 +110,6 @@ import historyManager from "./history-manager.js";
 
 import viewsManager from "./views-manager.js";
 import * as imageManager from "./image-manager.js";
-import { init as dateUtilsInit } from "./utils/date-utils.js";
 import { init as utilsInit } from "./utils/utils.js";
 import { isPrayerInSection } from "./data/utils.js";
 
@@ -119,7 +120,7 @@ const app = new Framework7({
   name: "Валаамский молитвослов",
   theme: navigator.userAgent.match(/Debug/) !== null ? "auto" : "md",
   disabled: false,
-  version: "1.16.1",
+  version: "1.25.0",
   // theme: 'ios',
 
   statusbar: {
@@ -206,7 +207,6 @@ const app = new Framework7({
       favoriteManager.init(this);
       imageManager.init(this);
       settingsManager.init(this);
-      dateUtilsInit(this);
 
       viewsManager.init(this);
 

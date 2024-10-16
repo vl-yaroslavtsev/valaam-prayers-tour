@@ -33,9 +33,30 @@ function remove(id) {
 }
 
 function list() {
-	let favorites = app.methods.storageGet('favorites') || [];
+	clearBadItems();
 
+	let favorites = app.methods.storageGet('favorites') || [];
 	return favorites.map(item => formatItem(item));
+}
+
+/** Очищаем элементы, которых нет в структуре */
+function clearBadItems() {
+	const prayers = dataManager.cache.prayers;
+	const favorites = app.methods.storageGet('favorites') || [];
+	const newFavorites = [];
+
+	favorites.forEach(item => {
+		if (item.type === 'prayer-e') {
+			const prayer = prayers.e.find(({id}) => id === item.id);
+			if (prayer) {
+				newFavorites.push(item);	
+			}
+		} else {
+			newFavorites.push(item);
+		}
+	});
+
+	app.methods.storageSet('favorites', newFavorites);	
 }
 
 function reorder({from, to} = {}) {

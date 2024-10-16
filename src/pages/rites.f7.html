@@ -313,6 +313,23 @@
 					</ul>
 				</div>
 
+				<div class="list form-list no-hairlines-md ext-margin">
+					<ul>
+						<li>
+							<label class="item-content item-checkbox item-checkbox-outline">
+								<input name="confirm_orthodox"
+								       type="checkbox"
+									   value="1"/>
+								<i class="icon icon-checkbox"></i>
+								<div class="item-inner">
+									<!--suppress HtmlUnknownAttribute -->
+									<div class="item-title">Подтерждаю, что все имена принадлежат крещёным православным христианам.</div>
+								</div>
+							</label>
+						</li>
+					</ul>
+				</div>
+
 				<div class="block">
 					<!--suppress HtmlUnknownAttribute -->
 					<button  id="formRites-button"
@@ -334,7 +351,9 @@
 
 <!--suppress HtmlUnknownAttribute -->
 <style scoped>
-
+	.list  {
+		--f7-list-item-title-white-space: wrap;
+	}
 	input:-webkit-autofill {
 		-webkit-box-shadow: inset 0 0 0 100px #fff !important;
 	}
@@ -383,6 +402,20 @@
 	} from '../js/utils/date-utils.js';
 	import dataManager from '../js/data/manager.js';
 
+	const getUID = () => {
+		return window.crypto.getRandomValues(new Uint32Array(4)).reduce((acc, el) => acc += el.toString(16), '');
+	};
+
+	const getClientId = () => {
+		let id = localStorage.getItem("rites-client-id");
+		if (!id) {
+			id = getUID();
+			localStorage.setItem("rites-client-id", id);
+		}
+
+		return id;        
+	};
+
 	let app, $el, ritesConfig;
 	export default {
 		methods: {
@@ -416,6 +449,7 @@
 				formData.return_url = 'https://valaam.ru/prayers.f7/#view-rites:/rites-status?id=%s';
 				formData.valaam_gid = valaamGid || '';
 				formData.valaam_key = '5Iz7Xi0ZxCr2vH3Ld4w6YKe7V4zAz6J0';
+				formData.clientId = getClientId();
 				// formData.valaam_debug = 'YES';
 
 				try {
@@ -481,7 +515,8 @@
 				});
 			},
 			onRiteChanged({target}) {
-				let selectedRite = ritesConfig.rites.find(({id}) => id == target.value);
+				let {rites, explanationsDead, explanationsAlive} = ritesConfig,
+					selectedRite = rites.find(({id}) => id == target.value);
 				selectedRite.group = selectedRite.name.split(' - ')[0];
 
 				this.$setState({
@@ -490,6 +525,27 @@
 
 				setStartDate.call(this);
 				calculateDonation.call(this);
+
+				$el = this.$el;
+				let	$namesValue = $el.find('#formRites-names'),
+					$names = $el.find('.vm-rites-names li:not(.display-none)'),
+					names = [];
+				//debugger;
+				$names.forEach((value) => {
+					let name = value.querySelector('.item-title').innerText.trim(),
+						explanations = value.querySelector('.item-after').innerText.trim()
+					;
+
+					if ((selectedRite.type === "4" && explanationsDead.includes(explanations)) || 
+						(selectedRite.type === "5" && explanationsAlive.includes(explanations))) {
+						explanations = "";
+						value.querySelector('.item-after').innerText = explanations;
+					}
+
+					if(name) names.push((explanations + ' ' + name).trim());
+				});
+
+				$namesValue.val(names.join('\n'));
 			}
 		},
 		on: {
@@ -540,7 +596,7 @@
 								return [
 									oneDayRite ?
 										`${format(date, 'd MMMM yyyy')} г.` :
-										`c ${format(date, 'd MMMM yyyy')} г. по ${format(addDays(date, this.selectedRite.period), 'd MMMM yyyy')} г.`
+										`c ${format(date, 'd MMMM yyyy')} г. по ${format(addDays(date, this.selectedRite.period - 1), 'd MMMM yyyy')} г.`
 								];
 							},
 							disabled: (date) => {
@@ -555,7 +611,7 @@
 									const oneDayRite = (this.selectedRite.period === 1);
 									const period = oneDayRite ?
 										format(date) :
-										`${format(date)}-${format(addDays(date, this.selectedRite.period))}`
+										`${format(date)}-${format(addDays(date, this.selectedRite.period - 1))}`
 									;
 									const now = new Date();
 

@@ -361,7 +361,13 @@
 		await updateLastReading.call(state);
 
 		prayers.e
-			.filter(({parent}) => parent === sectionId)
+			.filter(({parent, parents}) => {
+				if (parents) {
+					return parents.includes(sectionId);
+				} else {
+					return parent === sectionId;
+				}
+			})
 			.forEach((data) => {
 				let record = history.find(({id}) => id === data.id);
 

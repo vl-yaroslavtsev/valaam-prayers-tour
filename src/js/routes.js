@@ -8,7 +8,7 @@ import CalendarHolidays from '../pages/calendar-holidays.f7.html';
 import Days from '../pages/days.f7.html';
 import DayInstructions from '../pages/day-instructions.f7.html';
 import DayThoughts from'../pages/day-thoughts.f7.html';
-import DayReaders from '../pages/day-readers.f7.html';
+import DayReadings from '../pages/day-readings.f7.html';
 import DayParabel from '../pages/day-parabel.f7.html';
 import DayPrayers from '../pages/day-prayers.f7.html';
 
@@ -93,10 +93,10 @@ export default [
 			 	}
 			},
 			{
-				path: 'readers/:readerId',
-				//component: DayReaders,
+				path: 'readings/:readingId',
+				//component: DayReadings,
 				async(routeTo, routeFrom, resolve, reject) {
-					resolve({component: DayReaders}, {context: routeFrom.context});
+					resolve({component: DayReadings}, {context: routeFrom.context});
 				},
 				options: {
 					transition: 'f7-push',
@@ -124,7 +124,7 @@ export default [
 				let componentMap = {
 					'instructions' : DayInstructions,
 					'thoughts' : DayThoughts,
-					'readers' : DayReaders,
+					'readings' : DayReadings,
 					'prayers' : DayPrayers
 				};
 

@@ -44,8 +44,8 @@
 					{{day.text}}
 				</div>
 
-				<div class="block-title">Евангельские Чтения</div>
-				<div class="block margin-top-half">{{day.readers_text}}</div>
+				<div class="block-title">Чтения Священного Писания</div>
+				<div class="block margin-top-half">{{day.readings_text}}</div>
 
 				{{#if day.prayers.text}}
 				<div class="block-title">Мысли на каждый день года</div>
@@ -114,24 +114,17 @@
 				<div class="block-title">Тропари и кондаки</div>
 				<div class="list no-hairlines-md">
 					<ul>
-						{{#if day.prayers.daily_tak}}
-						<li>
-							<a href="/prayers/text/{{day.prayers.daily_tak.id}}" class="item-link item-content">
-								<div class="item-inner">
-									<div class="item-title">{{day.prayers.daily_tak.name}}</div>
-								</div>
-							</a>
-						</li>
+						{{#if day.prayers.taks}}
+							{{#each day.prayers.taks}}
+							<li>
+								<a href="/prayers/text/{{id}}" class="item-link item-content">
+									<div class="item-inner">
+										<div class="item-title">{{name}}</div>
+									</div>
+								</a>
+							</li>
+							{{/each}}
 						{{/if}}
-						{{#each day.prayers.items}}
-						<li>
-							<a href="/days/{{@root.dayCode}}/prayers/{{id}}" class="item-link item-content">
-								<div class="item-inner">
-									<div class="item-title">{{name}}</div>
-								</div>
-							</a>
-						</li>
-						{{/each}}
 					</ul>
 				</div>
 			</div>
@@ -174,9 +167,10 @@
 	.day-saints-text strong {
 	}
 
-	.day-saints-text em {
+	.day-saints-text em,
+	.day-saints-text em a {
 		font-style: normal;
-		font-size: 1.25em;
+		font-size: 1.15em;
 		color: red;
 	}
 
@@ -269,7 +263,7 @@
 			let prayers = dataManager.cache.prayers,
 				dayCode = this.$route.params.id,
 				day = Object.assign({}, this.day);
-
+	
 			day.text = (day.text)
 				.replace(/href="E(\d+)"/g, 'href="/prayers/text/$1"')
 			;
@@ -290,8 +284,6 @@
 
 			day.picture_desc = app.methods.hyphenate(day.picture_desc);
 
-			day.readers_text = day.readers_text.replace(/\^(\d+)/g, '<sup>$1</sup>');
-
 			day.parabel_short = day.parabel
 				.replace(/<\/?[^>]+>/gi, '')
 				.slice(0, 300)
@@ -307,6 +299,11 @@
 				day.synaxarion = prayers.e.find(
 					(e) => e.id === day.synaxarion
 				);
+			}
+
+			if (day.readings_text) {
+				day.readings_text = day.readings_text.replace(/\^(\d+)/g, '<sup>$1</sup>');
+				day.readings_text = day.readings_text.replace(/\/readings\//g, `/days/${day.code}/readings/`);
 			}
 
 			let oldstyleDate = subDays(parse(day.code), 13);

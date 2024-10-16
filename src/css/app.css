@@ -39,9 +39,10 @@ body,
 }
 
 :root .page-content {
-	overflow-y: overlay;
+	overflow-y: overlay!important;
 	overflow-x: hidden;
 }
+
 
 .page {
 	--scrollbar-width: 8px;
@@ -55,18 +56,18 @@ body,
 }
 
 .page-content::-webkit-scrollbar {
-  -webkit-appearance: none;
+  	-webkit-appearance: none;
 	width: var(--scrollbar-width);
 }
 
 .page-content::-webkit-scrollbar-thumb {
 	min-height: 25px;
-  background-clip: content-box;
-  box-shadow: var(--scrollbar-thumb-color) 0 0 0 var(--scrollbar-width) inset;
-  border-style: solid;
-  border-color: transparent;
-  border-width: 1px calc((var(--scrollbar-width) - var(--scrollbar-thumb-width)) / 2);
-  border-radius: calc(var(--scrollbar-width) / 2 - 1px);
+  	background-clip: content-box;
+  	box-shadow: var(--scrollbar-thumb-color) 0 0 0 var(--scrollbar-width) inset;
+  	border-style: solid;
+  	border-color: transparent;
+ 	border-width: 1px calc((var(--scrollbar-width) - var(--scrollbar-thumb-width)) / 2);
+ 	border-radius: calc(var(--scrollbar-width) / 2 - 1px);
 }
 
 .page-content::-webkit-scrollbar-thumb:hover,

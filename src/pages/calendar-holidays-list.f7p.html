@@ -1,6 +1,8 @@
 <template>
 	{{#each holidays}}
+	{{#if name}}
 	<div class="block-title">{{name}}</div>
+	{{/if}}
 	{{#if desc}}
 	<div class="block-header">{{desc}}</div>
 	{{/if}}

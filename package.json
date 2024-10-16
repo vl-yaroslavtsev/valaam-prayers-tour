@@ -1,45 +1,48 @@
 {
   "name": "ru.valaam.prayers",
-  "version": "1.16.2",
+  "version": "1.25.0",
   "description": "Молитвослов и календарь от Валаамского монастыря",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "watch": "webpack --watch --progress",
-    "dev": "webpack",
-    "dist": "webpack --env.production --env.hash",
-    "prod": "webpack --env.production --env.hash && rm -rf ../../prayers.f7/* && cp -r ./dist/. ../../prayers.f7/"
+    "dev": "webpack && serve ./dev",
+    "dist": "webpack --env.production --env.hash && serve ./dist",
+    "copy:prod": "scripts\\copy.prod.cmd",
+    "prod": "jest && webpack --env.production --env.hash && npm run copy:prod"
   },
   "keywords": [],
   "author": "Ивайло Тилев <ivaylo@tilev.ru>, Валаамский монастырь <webmaster@valaam.ru>",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.10.5",
-    "@babel/preset-env": "^7.10.4",
-    "babel-loader": "^8.1.0",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "babel-loader": "^8.4.1",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.6.0",
     "file-loader": "^5.1.0",
     "framework7-component-loader": "^2.0.0",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^25.5.4",
     "mini-css-extract-plugin": "^0.9.0",
     "offline-plugin": "^5.0.7",
-    "optimize-css-assets-webpack-plugin": "^5.0.3",
-    "regenerator-runtime": "^0.13.5",
-    "style-loader": "^1.2.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.8",
+    "regenerator-runtime": "^0.13.11",
+    "serve": "^9.6.0",
+    "style-loader": "^1.3.0",
     "terser-webpack-plugin": "^2.3.7",
-    "webpack": "^4.43.0",
+    "webpack": "^4.47.0",
     "webpack-cli": "^3.3.12",
     "worker-loader": "^2.0.0"
   },
   "dependencies": {
-    "abortcontroller-polyfill": "^1.4.0",
-    "core-js": "^3.6.5",
-    "date-fns": "^2.15.0",
-    "framework7": "^5.7.10",
+    "abortcontroller-polyfill": "^1.5.0",
+    "core-js": "^3.35.0",
+    "date-fns": "^2.30.0",
+    "framework7": "^5.7.14",
     "idb": "^5.0.4",
-    "lodash-es": "^4.17.15"
+    "lodash-es": "^4.17.21"
   },
   "browserslist": [
     "Android >= 49",
@@ -47,5 +50,9 @@
     "Chrome >= 49",
     "Safari >= 10",
     "iOS >= 10"
-  ]
+  ],
+  "engines": {
+    "node": ">=8.16.0 <9.0.0",
+    "npm": ">=6.4.0 <7.0.0"
+  }
 }

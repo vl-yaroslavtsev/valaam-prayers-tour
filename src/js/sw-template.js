@@ -18,7 +18,7 @@ self.addEventListener('fetch', (event) => {
 
 	// Серверные json из /phonegap/
 	// Android WebView выдает ошибку, если нет сети. Подменяем ее на 503
-	if (/\phonegap\//.test(url.pathname))  {
+	if (/\phonegap.tour\//.test(url.pathname))  {
 		return event.respondWith(
 			fetchDef(event.request, {
 				default: jsonDefResponse()
