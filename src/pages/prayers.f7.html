@@ -108,7 +108,7 @@
 	import dataManager from '../js/data/manager.js';
 	import db from '../js/data/db.js';
 	import { isMobile } from '../js/utils/utils.js';
-	import { prayersBookId, isPrayerInSection } from '../js/data/utils.js';
+	import { getPrayersBookId, getPrayerSectionDepth } from '../js/data/utils.js';
 
 	const PRAYERS_SID = "842"; // Полный молитвослов
 	const LITURGICAL_BOOKS_SID = "937"; // Богослужебные книги
@@ -252,7 +252,7 @@
 		try {
 			let sectionId = this.$route.params.sectionId || "0";
 			let [history, prayers] = await Promise.all([
-				db.read_history.getAllFromIndex('by-parent-id', sectionId),
+				db.read_history.getAll(), //db.read_history.getAllFromIndex('by-parent-id', sectionId),
 				dataManager.get('prayers')
 			]);
 
@@ -273,7 +273,7 @@
 	async function updateLastReading() {
 		let lastReading;
 		let readingDepth;
-		let bookId = prayersBookId({sectionId: this.id});
+		let bookId = getPrayersBookId({sectionId: this.id});
 		if (!bookId) return;
 
 		let readings = await db.read_history.getAllFromIndex('by-book-id', bookId);
@@ -281,13 +281,13 @@
 
 		readings = sortBy(readings, ['date']);
 		for (let i = readings.length - 1; i >= 0; i--) {
-			if (readingDepth = isPrayerInSection(readings[i].id, [this.id])) {
-				 lastReading = readings[i];
-				 break;
+			if (readingDepth = getPrayerSectionDepth(readings[i].id, [this.id])) {
+				lastReading = readings[i];
+				break;
 			}
 		}
 		if (!lastReading) {
-			 return;
+			return;
 		}
 		let path = lastReading.path;
 		path = path.slice(path.length - readingDepth + 1);

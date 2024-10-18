@@ -7,31 +7,52 @@ import dataManager from './manager.js';
  * @return {boolean}
  */
 function isPrayerInSection(prayerId, parents) {
-	let prayers = dataManager.cache.prayers.e;
+	const prayers = dataManager.cache.prayers.e;
 	if (!Array.isArray(parents))
 		parents = [parents];
 
-	let prayer = prayers.find(({id}) => id === prayerId);
+	const prayer = prayers.find(({id}) => id === prayerId);
 	if (!prayer)
-		return 0;
+		return false;
 
-	
-	return prayersParents(prayer.parent, parents, 1);
+	if (prayer.parents) {
+		return prayer.parents.some((parent) => !!getSectionDepth(parent, parents, 1));
+	}
+
+	return !!getSectionDepth(prayer.parent, parents, 1);
 }
 
 /**
- * Проверяем, принадлежит указанный раздел к разделу (одному или нескольким)
+ * Получаем глубину молитвы в разделе/ах
+ * @param  {string} prayerId Id молитвы
+ * @param  {Array.<string>} parents  Id разделов
+ * @return {number}
+ */
+function getPrayerSectionDepth(prayerId, parents) {
+	const prayers = dataManager.cache.prayers.e;
+	if (!Array.isArray(parents))
+		parents = [parents];
+
+	const prayer = prayers.find(({id}) => id === prayerId);
+	if (!prayer)
+		return 0;
+	
+	return getSectionDepth(prayer.parent, parents, 1);
+}
+
+/**
+ * Получаем глубину раздела в разделе
  * @param  {string} prayerId Id разделов
  * @param  {Array.<string>} parents  Id разделов
  * @return {number} depth
  */
-function prayersParents(sectionId, parents, depth) {
+function getSectionDepth(sectionId, parents, depth = 1) {
 	if (parents.includes(sectionId)) {
 		return depth;
 	}
 
-	let sections = dataManager.cache.prayers.s;
-	let section = sections.find(({id}) => id === sectionId);
+	const sections = dataManager.cache.prayers.s;
+	const section = sections.find(({id}) => id === sectionId);
 
 	if (!section) {
 		return 0;
@@ -41,7 +62,7 @@ function prayersParents(sectionId, parents, depth) {
 		return 0;
 	}
 
-	return prayersParents(section.parent, parents, ++depth);
+	return getSectionDepth(section.parent, parents, ++depth);
 }
 
 /**
@@ -50,20 +71,20 @@ function prayersParents(sectionId, parents, depth) {
  * @param  {string} sectionId Id раздела
  * @return {string || boolean}
  */
-function prayersBookId({prayerId, sectionId}) {
+function getPrayersBookId({prayerId, sectionId}) {
 	let currSectionId = sectionId;
 	if (prayerId) {
-		let prayers = dataManager.cache.prayers.e;
-		let prayer = prayers.find(({id}) => id === prayerId);
+		const prayers = dataManager.cache.prayers.e;
+		const prayer = prayers.find(({id}) => id === prayerId);
 		if (!prayer) {
 			return false;
 		}
 		currSectionId = prayer.parent;
 	}
 
-	let sections = dataManager.cache.prayers.s;
+	const sections = dataManager.cache.prayers.s;
 	while (true) {
-		let section = sections.find(({id}) => id === currSectionId);
+		const section = sections.find(({id}) => id === currSectionId);
 
 		if (!section) {
 			return false;
@@ -86,7 +107,7 @@ function prayersBookId({prayerId, sectionId}) {
  * @param  {string} prayerId Id разделов
  * @return {Array.<PrayerSection>}
  */
-function prayersPath(prayerId) {
+function getPrayersPath(prayerId) {
 	let prayers = dataManager.cache.prayers.e;
 	let sections = dataManager.cache.prayers.s;
 	let prayer = prayers.find(({id}) => id === prayerId);
@@ -97,7 +118,7 @@ function prayersPath(prayerId) {
 
 	let sectionId = prayer.parent;
 	while (true) {
-		let section = sections.find(({id}) => id === sectionId);
+		const section = sections.find(({id}) => id === sectionId);
 
 		if (!section) {
 			return path;
@@ -113,4 +134,4 @@ function prayersPath(prayerId) {
 	}
 }
 
-export {isPrayerInSection, prayersBookId, prayersPath}
+export {isPrayerInSection, getPrayerSectionDepth, getPrayersBookId, getPrayersPath}

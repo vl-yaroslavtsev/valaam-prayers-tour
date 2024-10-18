@@ -5,7 +5,7 @@ import { Dom7 as $$ } from 'framework7';
 import StateStore from '../js/state-store.js';
 import settingsManager from '../js/settings-manager.js';
 import db from '../js/data/db.js';
-import { prayersBookId, prayersPath } from '../js/data/utils.js';
+import { getPrayersBookId, getPrayersPath } from '../js/data/utils.js';
 
 const READ_HISTORY_MAX_SIZE = 1000;
 
@@ -94,8 +94,8 @@ class ReadMode extends StateStore {
 				name: this.context.name,
 				parent_id: this.context.parent,
 				date: new Date(),
-				book_id: prayersBookId({prayerId: this.context.id}),
-				path: prayersPath(this.context.id),
+				book_id: getPrayersBookId({prayerId: this.context.id}),
+				path: getPrayersPath(this.context.id),
 				// scroll: $content.scrollTop() / $content[0].scrollHeight,
 				// page: this.page,
 				// pages: this.pages

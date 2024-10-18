@@ -120,7 +120,7 @@ const app = new Framework7({
   name: "Валаамский молитвослов",
   theme: navigator.userAgent.match(/Debug/) !== null ? "auto" : "md",
   disabled: false,
-  version: "1.25.0",
+  version: "1.26.0",
   // theme: 'ios',
 
   statusbar: {
@@ -343,8 +343,9 @@ const app = new Framework7({
         return await dataManager.get(source, ...args);
       } catch (err) {
         let msg;
-        //	console.log('app.load error', err.name, err.message, err, source);
-        if (err.message === "Network error") {
+        
+        //console.log('app.load error', err.name, err.message, err, source);
+        if (err instanceof TypeError) {
           let type = "версию";
           let dataId;
           switch (source) {
