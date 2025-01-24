@@ -10,7 +10,7 @@
 						<span class="">Назад</span>
 					</a>
 				</div>
-				<div class="title">{{name}}</div>
+				<div class="title">{{short_name}}</div>
 				<div class="right">
 					<a class="link smart-select smart-select-init"
 						 data-open-in="popover"
@@ -107,6 +107,8 @@
 			readingData.slavonicText = text.join('<br>');
 
 			readingData.searchMode = this.$route.query.mode === 'search';
+
+			readingData.short_name = readingData.short_name || readingData.name;
 
 			return readingData;
 		},
