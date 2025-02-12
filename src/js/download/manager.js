@@ -15,8 +15,8 @@ import StateStore from "../state-store.js";
 import db from "../data/db.js";
 import downloadItemsList from "./items.js";
 
-const BASE_URL = "https://valaam.ru";
-const API_URL = "https://valaam.ru/phonegap.tour/";
+const BASE_URL = "https://molitvoslov.valaam.ru";
+const API_URL = "https://molitvoslov.valaam.ru/rest-tour/";
 
 let manager;
 
@@ -195,7 +195,7 @@ async function testFitures() {
   await (async function _testBlobImg() {
     let blob, result;
     let src2 =
-      "https://valaam.ru/upload/iblock/59f/59fcea0d296ab35820997e98bed8c3bd.jpg";
+      "https://molitvoslov.valaam.ru/upload/iblock/59f/59fcea0d296ab35820997e98bed8c3bd.jpg";
     result = "";
     try {
       let response = await fetch(src2);

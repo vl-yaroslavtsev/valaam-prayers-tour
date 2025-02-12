@@ -11,7 +11,7 @@ import { jsonSize, isMobile } from '../utils/utils.js';
 
 import db from '../data/db.js';
 
-const API_URL = 'https://valaam.ru/phonegap.tour/';
+const API_URL = 'https://molitvoslov.valaam.ru/rest-tour/';
 
 /**
  * Базовый класс для источника json

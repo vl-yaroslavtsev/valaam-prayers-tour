@@ -10,7 +10,7 @@ import { fetchJson, fetchRaw } from '../utils/utils.js';
 const RETRY_PERIOD = 2 * 1000;
 const MAX_RETRY_COUNT = 43200; // 1 сутки
 
-const SITE_URL = 'https://valaam.ru';
+const SITE_URL = 'https://molitvoslov.valaam.ru';
 
 class FetchTask extends StateStore {
 

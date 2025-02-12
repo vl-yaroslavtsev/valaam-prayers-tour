@@ -1,6 +1,6 @@
 import DataSource from './source.js';
 
-const API_URL = 'https://valaam.ru/phonegap.tour/';
+const API_URL = 'https://molitvoslov.valaam.ru/rest-tour/';
 
 export default [
 	new DataSource({
@@ -21,7 +21,7 @@ export default [
 	}),
 	new DataSource({
 		id: 'ritesConfig',
-		url: `${API_URL}rites-config?type=json`,
+		url: `${API_URL}rites-config.php?type=json`,
 		handler: 'cacheThenNetwork'
 	}),
 	new DataSource({

@@ -120,7 +120,7 @@ const app = new Framework7({
   name: "Валаамский молитвослов",
   theme: navigator.userAgent.match(/Debug/) !== null ? "auto" : "md",
   disabled: false,
-  version: "1.28.1",
+  version: "1.28.2",
   // theme: 'ios',
 
   statusbar: {
@@ -454,7 +454,7 @@ function checkSupport(app) {
 		<ol>
 			<li>
 			В <b>Google Chrome</b> перейдите по
-			ссылке <a href="https://valaam.ru/prayers.f7/">https://valaam.ru/prayers.f7/</a>
+			ссылке <a href="https://molitvoslov.valaam.ru/app-tour/">https://molitvoslov.valaam.ru/app-tour/</a>
 			</li>
 			<li>
 			Согласитесь на предложение установить "Молитвослов" на главный экран

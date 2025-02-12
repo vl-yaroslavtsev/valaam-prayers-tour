@@ -194,7 +194,7 @@ export default [
 			app.preloader.show();
 			try {
 				let {data} = await Request.promise.json(
-					`https://valaam.ru/phonegap.tour/rites/${routeTo.query.id}`
+					`https://molitvoslov.valaam.ru/rest-tour/rites/${routeTo.query.id}`
 				);
 				app.preloader.hide();
 				resolve({component: RitesStatus}, {context: data});

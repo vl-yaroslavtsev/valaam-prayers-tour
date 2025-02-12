@@ -74,7 +74,7 @@
 	export default {
 		methods: {
 			async checkStatus() {
-				let {data: result} = await Request.promise.json(`https://valaam.ru/phonegap.tour/rites/${this.id}`);
+				let {data: result} = await Request.promise.json(`https://molitvoslov.valaam.ru/rest-tour/rites/${this.id}`);
 
 				if (+result['status_id'] === ritesConfig['constants']['BX_IBLOCK_RITEORDER__STATUS_PAY'] ||
 				    +result['status_id'] === ritesConfig['constants']['BX_IBLOCK_RITEORDER__STATUS_DONE']) {
