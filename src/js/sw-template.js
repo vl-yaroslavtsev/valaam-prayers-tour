@@ -5,7 +5,9 @@ self.addEventListener('fetch', (event) => {
 	const url = new URL(event.request.url);
 
 	if (event.request.method != 'GET') return;
-	if (url.origin !== location.origin) return;
+
+	//console.log('sw', url.origin, location.origin);
+	//if (url.origin !== location.origin) return;
 
 	// Android WebView выдает ошибку, если нет сети. Подменяем ее на 404
 	if (/\.(?:png|gif|jpg|jpeg|webp)$/.test(url.pathname)) {
@@ -18,7 +20,8 @@ self.addEventListener('fetch', (event) => {
 
 	// Серверные json из /phonegap/
 	// Android WebView выдает ошибку, если нет сети. Подменяем ее на 503
-	if (/\phonegap.tour\//.test(url.pathname))  {
+	// console.log('sw', url.pathname);
+	if (/\/rest-tour\//.test(url.pathname))  {
 		return event.respondWith(
 			fetchDef(event.request, {
 				default: jsonDefResponse()
@@ -36,7 +39,7 @@ self.addEventListener('fetch', (event) => {
  * @return {Promise}
  */
  function fetchDef(request, {default: defResponse}) {
-	 return fetch(request)
+	 	return fetch(request)
 						.catch(ex => {
 							return defResponse || Response.error();
 						});
