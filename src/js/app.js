@@ -120,7 +120,7 @@ const app = new Framework7({
   name: "Валаамский молитвослов",
   theme: navigator.userAgent.match(/Debug/) !== null ? "auto" : "md",
   disabled: false,
-  version: "1.28.4",
+  version: "1.28.6",
   // theme: 'ios',
 
   statusbar: {
@@ -342,12 +342,10 @@ const app = new Framework7({
       try {
         return await dataManager.get(source, ...args);
       } catch (err) {
-        let msg;
-        
+        let msg;        
         //console.log('app.load error', err.name, err.message, err, source);
-        if (err instanceof TypeError) {
-          let type = "версию";
-          let dataId;
+        if (err.message === 'Network Error') {
+          let type = "офлайн данные";
           switch (source) {
             case "day":
             case "calendar":
@@ -368,16 +366,16 @@ const app = new Framework7({
               break;
           }
           msg = `
-						Ошибка загрузки данных.<br>
-						Проверьте подключение к сети Интернет.<br>
-						Для отображения офлайн скачайте
-						<a class="link"
-						 	 data-view="current"
-						   href="/settings/download">${type}</a>.
-					`;
+            Ошибка загрузки данных.<br>
+            Проверьте подключение к сети Интернет.<br>
+            Для отображения офлайн скачайте
+            <a class="link"
+                data-view="current"
+                href="/settings/download">${type}</a>.
+          `;
         }
         app.methods.showLoadError(msg);
-        throw err;
+        //throw err;
       } finally {
         if (opts.preloader) {
           app.preloader.hide();

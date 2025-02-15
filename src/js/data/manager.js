@@ -250,10 +250,10 @@ class DataManager {
 		try {
 			let response = await fetch(url);
 			if (!response.ok) {
-				if (response.statusText === 'Network error') {
-					throw new Error('Network error');
+				if (response.statusText === 'Network Error') {
+					throw new Error('Network Error');
 				}
-				throw new Error('Fetch error');
+				throw new Error('Fetch Error');
 			}
 
 			let json = await response.json();
