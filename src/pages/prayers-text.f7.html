@@ -107,16 +107,28 @@
 				{{/js_if}}
 
 				<div class="tabs">
-					{{#if churchslavonicText}}
+					{{#if cslText}}
 					<div class="tab {{#unless twoText}}tab-active{{/unless}}" id="tab-churchslavonic">
-						<div class="block block-strong inset churchslavonic">
-						{{#if readMode}}
-							{{#if parentPath}}
-							<h1 class="subtitle">{{parentPath}}</h1>
+						<div class="block block-strong inset churchslavonic churchslavonic_unicode">
+							{{#if readMode}}
+								{{#if parentPath}}
+								<h1 class="subtitle">{{parentPath}}</h1>
+								{{/if}}
+								<h1 class="title">{{name}}</h1>
 							{{/if}}
-							<h1 class="title">{{name}}</h1>
-						{{/if}}
-						{{churchslavonicText}}
+							{{cslText}}
+						</div>
+					</div>
+					{{elseif churchslavonicText}}
+					<div class="tab {{#unless twoText}}tab-active{{/unless}}" id="tab-churchslavonic">
+						<div class="block block-strong inset churchslavonic churchslavonic_ucs">
+							{{#if readMode}}
+								{{#if parentPath}}
+								<h1 class="subtitle">{{parentPath}}</h1>
+								{{/if}}
+								<h1 class="title">{{name}}</h1>
+							{{/if}}
+							{{churchslavonicText}}
 						</div>
 					</div>
 					{{/if}}
@@ -282,7 +294,8 @@
 		data.picture_3x = prayer.picture_3x;
 		data.churchslavonicText = prayer.churchslavonic_text;
 		data.slavonicText = prayer.slavonic_text;
-		data.twoText = !!(data.churchslavonicText && data.slavonicText);
+		data.cslText = prayer.csl_text;
+		data.twoText = !!((data.churchslavonicText || data.cslText) && data.slavonicText);
 
 		let list = prayers.e.filter(({parent}) => parent === prayer.parent);
 		let index = list.findIndex(({id}) => id === prayer.id);
@@ -303,7 +316,7 @@
 		} else if (data.twoText) {
 			langId = app.methods.storageGet('prayers-text-language') || 'slavonic';
 
-		} else if (data.churchslavonicText) {
+		} else if (data.churchslavonicText || data.cslText) {
 			langId = 'churchslavonic';
 
 		} else {

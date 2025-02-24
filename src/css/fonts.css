@@ -9,6 +9,7 @@
 			   url('../fonts/Triodion.svg#Triodion-Ucs') format('svg'); */
 }
 
+/*
 @font-face {
 	font-family: Hirmos;
 	src: local('Hirmos'), local('Hirmos Ucs'),
@@ -57,10 +58,60 @@
 	font-weight: normal;
 }
 
+*/
+
 @font-face {
   font-family: 'Triodion Unicode';
 	src: local('Triodion Unicode'),
        url('../fonts/TriodionUnicode.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ponomar Unicode';
+	src: local('Ponomar Unicode'),
+       url('../fonts/PonomarUnicode.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Acathist';
+	src: local('Acathist'),
+       url('../fonts/Acathist-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fedorovsk Unicode';
+	src: local('Fedorovsk Unicode'),
+       url('../fonts/FedorovskUnicode.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Monomakh Unicode';
+	src: local('Monomakh Unicode'),
+       url('../fonts/MonomakhUnicode.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pochaevsk Unicode';
+	src: local('Pochaevsk Unicode'),
+       url('../fonts/PochaevskUnicode.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Vilnius';
+	src: local('Vilnius'),
+       url('../fonts/Vilnius-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }

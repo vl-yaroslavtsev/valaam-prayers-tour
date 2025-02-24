@@ -9,6 +9,7 @@ let app;
 function init(appInstance) {
 	app = appInstance;
 	setDefault();
+	updateFonts();
 	apply();
 }
 
@@ -33,6 +34,26 @@ function save(item = {}) {
 
 	Object.assign(settings, item);
 	app.methods.storageSet('settings', settings);
+}
+
+function updateFonts() {
+	let settings = app.methods.storageGet('settings') || {};
+
+	const cslFontsMap = {
+		'Triodion': 'Triodion Unicode',
+		'Orthodox': 'Ponomar Unicode',
+		'Hirmos': 'Ponomar Unicode',
+		'Akathistos': 'Acathist',
+		'Pochaevsk': 'Pochaevsk Unicode',
+		'StaroUspenskaya': 'Monomakh Unicode',
+		'Ostrog': 'Fedorovsk Unicode'
+	};
+
+	if (settings.csFontFamily && cslFontsMap[settings.csFontFamily]) {
+		settings.csFontFamily = cslFontsMap[settings.csFontFamily];
+	}
+	
+	save(settings);
 }
 
 function apply(state) {
@@ -111,7 +132,7 @@ function applyStyles({
 			${textAlign ? 'text-align: ' + textAlign + ' !important;' : ''}
       ${noPadding ? '--f7-block-padding-horizontal:5px;': ''}
 		}
-		.md .churchslavonic {
+		.md .churchslavonic_unicode {
 			${csFontFamily ? 'font-family: "' + csFontFamily + '" !important;' : ''}
 		}
 		.md .churchslavonic,

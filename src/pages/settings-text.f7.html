@@ -68,7 +68,7 @@
 									{{#each csFonts}}
 										<option value="{{this}}"
 														{{#js_if "this == @root.csFontFamily"}}selected{{/js_if}}>
-							 				{{this}}
+							 				{{@key}}
 										</option>
 									{{/each}}
 								</select>
@@ -400,15 +400,25 @@
 		'Times New Roman'
 	];
 
-	const CHURCHSLAVONIC_FONTS = [
-		'Triodion',
-		'Orthodox',
-		'Hirmos',
-		'Akathistos',
-		'Pochaevsk',
-		'StaroUspenskaya',
-		'Ostrog'
-	];
+	// const CHURCHSLAVONIC_FONTS = [
+	// 	'Triodion',
+	// 	'Orthodox',
+	// 	'Hirmos',
+	// 	'Akathistos',
+	// 	'Pochaevsk',
+	// 	'StaroUspenskaya',
+	// 	'Ostrog'
+	// ];
+
+	const CHURCHSLAVONIC_FONTS = {
+		'Triodion': 'Triodion Unicode',
+		'Ponomar': 'Ponomar Unicode',
+		'Acathist': 'Acathist',
+		'Pochaevsk': 'Pochaevsk Unicode',
+		'Monomakh': 'Monomakh Unicode',	
+		'Fedorovsk': 'Fedorovsk Unicode',
+		'Vilnius': 'Vilnius',
+	};
 
 	const TEXT_ALIGN_OPTIONS = [
 		{
@@ -601,6 +611,8 @@
 		let $block = $page.find('.tab-active > .block-strong.inset');
 		let language = $page[0].f7Component.language;
 
+		const csFontFamilyUnicode = settingsManager.get('csFontFamily') || 'Triodion Unicode';
+
 		if (!$block.length) {
 			$block = $page.find('.block-strong.inset');
 		}
@@ -632,7 +644,7 @@
 
 		} else if (language.id === 'churchslavonic') {
 			Object.assign(style, {
-				csFontFamily: blockStyle.fontFamily.split(',')[0].replace(/["']/g, ''),
+				csFontFamily: csFontFamilyUnicode, //blockStyle.fontFamily.split(',')[0].replace(/["']/g, ''),
 				csFontSize: parseFloat(blockStyle.fontSize).toFixed(1),
 				csLineHeight: (parseFloat(blockStyle.lineHeight) / parseFloat(blockStyle.fontSize)).toFixed(2),
 				csFontWeight: blockStyle.fontWeight

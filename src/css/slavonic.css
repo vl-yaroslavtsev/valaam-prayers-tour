@@ -11,6 +11,7 @@
 .churchslavonic-ereader {
 	font-family: 'Triodion Unicode', serif;
 	font-size: 1.5em;
+	text-align: justify;
 	color: var(--read-text-color);
 	background: var(--read-text-background);
 }
@@ -63,12 +64,19 @@
 }
 
 .churchslavonic {
-	font-family: Triodion, serif;
 	font-size: 1.5em;
 	line-height: 1.25;
 	text-align: justify;
 	color: var(--read-text-color);
 	background: var(--read-text-background);
+}
+
+.churchslavonic_unicode {
+	font-family: 'Triodion Unicode', serif;
+}
+
+.churchslavonic_ucs {
+	font-family: 'Triodion UCS', serif;
 }
 
 .churchslavonic p {
