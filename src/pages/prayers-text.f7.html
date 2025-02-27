@@ -104,8 +104,7 @@
 					{{/if}}
 					{{text}}
 				</div>
-				{{/js_if}}
-
+				{{else}}
 				<div class="tabs">
 					{{#if cslText}}
 					<div class="tab {{#unless twoText}}tab-active{{/unless}}" id="tab-churchslavonic">
@@ -146,7 +145,8 @@
 					</div>
 					{{/if}}
 				</div>
-			{{/if}}
+				{{/js_if}}
+			{{/if}}	
 		</div>
 		<read-mode-tutorial id="read-mode-tutorial-{{id}}"></read-mode-tutorial>
 	</div>
