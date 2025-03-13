@@ -293,6 +293,27 @@
 						<li>
 							<div class="item-content">
 								<div class="item-media">
+									<i class="icon material-icons md-only disabled">wrap_text</i>
+								</div>
+								<div class="item-inner">
+									<div class="item-title">
+										Переносы cлов
+									</div>
+									<div class="item-after">
+										<label class="toggle toggle-init"
+													 id="toggle-text-hyphens"
+													 @toggle:change="onStyleChange">
+											<input type="checkbox"
+														 {{#js_if "this.textHyphens"}}checked{{/js_if}}>
+											<span class="toggle-icon"></span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-media">
 									<i class="icon material-icons md-only disabled">format_indent_increase</i>
 								</div>
 								<div class="item-inner">
@@ -394,10 +415,10 @@
 		'Circe',
 		'Roboto',
 		'PT Sans',
-		'Arial',
+		'Noto Sans',
 		'PT Serif',
 		'Noto Serif',
-		'Times New Roman'
+		'Literata',
 	];
 
 	// const CHURCHSLAVONIC_FONTS = [
@@ -537,6 +558,10 @@
 						newState.textAlign = target.value;
 						break;
 
+					case 'toggle-text-hyphens':
+						newState.textHyphens = target.querySelector('input').checked;
+						break;
+
 					case 'toggle-text-padding':
 						newState.noPadding = !target.querySelector('input').checked;
 						break;
@@ -631,7 +656,8 @@
 			language,
 			colorTheme,
 			textAlign: blockStyle.textAlign,
-			noPadding: parseInt(blockStyle.getPropertyValue('--f7-block-padding-horizontal')) <= 5
+			noPadding: parseInt(blockStyle.getPropertyValue('--f7-block-padding-horizontal')) <= 5,
+			textHyphens: blockStyle.hyphens === 'manual'
 		};
 
 		if (language.id === 'slavonic') {

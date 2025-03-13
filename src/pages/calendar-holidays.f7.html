@@ -287,9 +287,9 @@
 
 				const items = data.holidays[0].items;
 
-				// Предпразднство и сам праздник Благовещения
+				// Предпразднство и сам праздник Благовещения, полиелей
 				const badKeys = Object.keys(items).filter((key) => {
-					return [`${year}0406`, `${year}0407`].includes(key) &&
+					return [`${year}0406`, `${year}0407`, `${year}0309`, `${year}0322`].includes(key) &&
 						/родительская/i.test(items[key]);
 				});
 

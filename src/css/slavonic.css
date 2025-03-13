@@ -14,6 +14,7 @@
 	text-align: justify;
 	color: var(--read-text-color);
 	background: var(--read-text-background);
+	hyphens: manual;
 }
 
 .churchslavonic-ereader .text-color-red {
@@ -69,6 +70,7 @@
 	text-align: justify;
 	color: var(--read-text-color);
 	background: var(--read-text-background);
+	hyphens: manual;
 }
 
 .churchslavonic_unicode {

@@ -20,6 +20,10 @@ function setDefault() {
 		settings.hideStatusbar = false;
 	}
 
+	if (!('textHyphens' in settings)) {
+		settings.textHyphens = true;
+	}
+
 	save(settings);
 }
 
@@ -114,7 +118,8 @@ function applyStyles({
 	csLineHeight,
 	csFontWeight,
   textAlign,
-  noPadding
+  noPadding,
+	textHyphens
 }) {
 	let isThemeDark = $$('html').hasClass('theme-dark');
 	let style = $$('#app-settings-style');
@@ -131,6 +136,7 @@ function applyStyles({
 			${slFontWeight ? 'font-weight: ' + slFontWeight + ' !important;' : ''}
 			${textAlign ? 'text-align: ' + textAlign + ' !important;' : ''}
       ${noPadding ? '--f7-block-padding-horizontal:5px;': ''}
+			${textHyphens ? 'hyphens: manual !important;' : 'hyphens: none !important;'}
 		}
 		.md .churchslavonic_unicode {
 			${csFontFamily ? 'font-family: "' + csFontFamily + '" !important;' : ''}
@@ -142,6 +148,7 @@ function applyStyles({
 			${csFontWeight ? 'font-weight: ' + csFontWeight + ' !important;' : ''}
 			${textAlign ? 'text-align: ' + textAlign + ' !important;' : ''}
       ${noPadding ? '--f7-block-padding-horizontal:5px;': ''}
+			${textHyphens ? 'hyphens: manual !important;' : 'hyphens: none !important;'}
 		}
 	</style>
 	`;

@@ -148,6 +148,61 @@
 	font-style: normal;
 }
 
+@font-face {
+	font-family: 'Noto Sans';
+	src: local('Noto Sans Bold Italic'), local('NotoSans-BoldItalic'),
+	    url('../fonts/NotoSans-BoldItalic.woff2') format('woff2');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Noto Sans';
+	src: local('Noto Sans Bold'), local('NotoSans-Bold'),
+	    url('../fonts/NotoSans-Bold.woff2') format('woff2');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Noto Sans';
+	src: local('Noto Sans Italic'), local('NotoSans-Italic'),
+	    url('../fonts/NotoSans-Italic.woff2') format('woff2');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Noto Sans';
+	src: local('Noto Sans Regular'), local('NotoSans-Regular'),
+	    url('../fonts/NotoSans-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+@font-face {
+	font-family: 'Literata';
+	src: local('Literata Bold Italic'), local('Literata-BoldItalic'),
+	    url('../fonts/Literata-BoldItalic.woff2') format('woff2');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Literata';
+	src: local('Literata Bold'), local('Literata-Bold'),
+	    url('../fonts/Literata-Bold.woff2') format('woff2');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Literata';
+	src: local('Literata Regular'), local('Literata-Regular'),
+	    url('../fonts/Literata-Regular.woff2') format('woff2');
+	font-weight: normal;
+}
 
 /*
 @font-face {
