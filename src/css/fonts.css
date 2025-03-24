@@ -1,5 +1,5 @@
 @font-face {
-	font-family: Triodion;
+	font-family: 'Triodion Ucs';
 	/* src: url('../fonts/Triodion.eot'); /* IE9 Compat Modes */
 	src: local('Triodion'), local('Triodion Ucs'),
 		   url('../fonts/Triodion.woff2') format('woff2'); /* Super Modern Browsers */
