@@ -158,7 +158,8 @@ function parseRelative(str, year = "") {
 
 	// День недели перед и после
 	} else if (weekdays.includes(str.slice(0, 2))) {    
-		const days = str.slice(3);
+		//let days = str.slice(3);
+		let days = str.replace('=', '').slice(3);
 		
 		if (days.indexOf('E') === 0) {
 			date = parseRelative(days, year);
@@ -181,7 +182,12 @@ function parseRelative(str, year = "") {
 		// Дата после, включает указанный день недели
 		if (str.indexOf('>') === 2) {
 			let toAdd = srcWeekdayNum - currWeekdayNum;
-			if (toAdd < 0 ) {
+
+			if (str.indexOf('=') === 3 && toAdd === 0) {
+				return date;
+			}			
+
+			if (toAdd <= 0 ) {
 				toAdd = 7 + toAdd;
 			}
 			
@@ -189,6 +195,11 @@ function parseRelative(str, year = "") {
 		// Дата перед, исключает указанный день недели
 		} else if (str.indexOf('<') === 2) {
 			let toSub = currWeekdayNum - srcWeekdayNum;
+
+			if (str.indexOf('=') === 3 && toSub === 0) {
+				return date;
+			}
+
 			if (toSub <= 0 ) {
 				toSub = 7 + toSub;
 			} 
