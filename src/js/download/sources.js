@@ -10,8 +10,7 @@ import {
 import { jsonSize, isMobile } from '../utils/utils.js';
 
 import db from '../data/db.js';
-
-const API_URL = 'https://molitvoslov.valaam.ru/rest-tour/';
+import { API_URL } from '../config.js';
 
 /**
  * Базовый класс для источника json

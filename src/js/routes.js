@@ -1,6 +1,7 @@
 
 import Framework7, { Request } from 'framework7';
 import './t7-helpers.js';
+import { API_URL } from './config.js';
 
 import Calendar from '../pages/calendar.f7.html';
 import CalendarHolidays from '../pages/calendar-holidays.f7.html';
@@ -194,7 +195,7 @@ export default [
 			app.preloader.show();
 			try {
 				let {data} = await Request.promise.json(
-					`https://molitvoslov.valaam.ru/rest-tour/rites/${routeTo.query.id}`
+					`${API_URL}rites/${routeTo.query.id}`
 				);
 				app.preloader.hide();
 				resolve({component: RitesStatus}, {context: data});

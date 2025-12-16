@@ -6,11 +6,12 @@ import Framework7 from 'framework7';
 
 import StateStore from '../state-store.js';
 import { fetchJson, fetchRaw } from '../utils/utils.js';
+import { BASE_URL } from '../config.js';
 
 const RETRY_PERIOD = 2 * 1000;
 const MAX_RETRY_COUNT = 43200; // 1 сутки
 
-const SITE_URL = 'https://molitvoslov.valaam.ru';
+const SITE_URL = BASE_URL;
 
 class FetchTask extends StateStore {
 

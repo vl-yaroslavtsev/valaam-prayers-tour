@@ -66,6 +66,8 @@ import Typography from "framework7/components/typography/typography.js";
 
 import "abortcontroller-polyfill/dist/polyfill-patch-fetch";
 
+import { BASE_URL } from './config.js';
+
 // Install F7 Components using .use() method on Framework7 class:
 Framework7.use([
   Autocomplete,
@@ -450,10 +452,10 @@ function checkSupport(app) {
 		Если это не помогает, можно установить "Молитвослов" как отдельное приложение.<br>
 		Для этого, пожалуйста:<br>
 		<ol>
-			<li>
-			В <b>Google Chrome</b> перейдите по
-			ссылке <a href="https://molitvoslov.valaam.ru/app-tour/">https://molitvoslov.valaam.ru/app-tour/</a>
-			</li>
+		<li>
+		В <b>Google Chrome</b> перейдите по
+		ссылке <a href="${BASE_URL}/app-tour/">${BASE_URL}/app-tour/</a>
+		</li>
 			<li>
 			Согласитесь на предложение установить "Молитвослов" на главный экран
 			</li>

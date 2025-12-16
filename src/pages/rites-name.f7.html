@@ -92,6 +92,7 @@
 <script>
 	import { Request, Dom7 as $$ } from 'framework7';
 	import dataManager from '../js/data/manager.js';
+	import { BASE_URL } from '../js/config.js';
 
 	let $el;
 
@@ -158,7 +159,7 @@
 							render([]);
 						else {
 							let {data} = await Request.promise.json(
-								'https://molitvoslov.valaam.ru/local/php-includes/rites-name.php',
+								`${BASE_URL}/local/php-includes/rites-name.php`,
 								{q: query}
 							);
 							render(data);

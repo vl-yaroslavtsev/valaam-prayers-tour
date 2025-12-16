@@ -93,15 +93,15 @@
 						{{/if}}
 						<h1 class="title">{{name}}</h1>
 					{{/if}}
-					{{#if picture}}
-					<p>
-						<img class="lazy"
-								 data-src="https://molitvoslov.valaam.ru{{picture}}"
-								 data-src-db="{{picture}}"
-								 data-src-full="https://molitvoslov.valaam.ru{{picture_3x}}"
-						>
-					</p>
-					{{/if}}
+				{{#if picture}}
+				<p>
+					<img class="lazy"
+							 data-src="{{baseUrl}}{{picture}}"
+							 data-src-db="{{picture}}"
+							 data-src-full="{{baseUrl}}{{picture_3x}}"
+					>
+				</p>
+				{{/if}}
 					{{text}}
 				</div>
 				{{else}}
@@ -170,6 +170,7 @@
 	import readModeMixin from './read-mode-mixin.js';
 	import { getPrayersBookId, getPrayersPath, isPrayerInSection } from '../js/data/utils.js';
 	import { languages, langById, langByCode } from '../js/data/languages.js';
+	import { BASE_URL } from '../js/config.js';
 
 
 	const VALAAM_SID = "1736";

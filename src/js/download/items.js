@@ -23,8 +23,7 @@ import {
 	SaintsList,
 	SaintsIcons
 } from './sources';
-
-const API_URL = 'https://molitvoslov.valaam.ru/rest-tour/';
+import { API_URL } from '../config.js';
 
 export default function getList() {
 	return [
