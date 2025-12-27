@@ -4,8 +4,7 @@
 import { Dom7 as $$ } from 'framework7';
 import { isMobile as isMobileDevice } from './utils/utils.js';
 import db from './data/db.js';
-
-const IMG_URL = 'https://valaam.ru';
+import { IMG_URL } from './config.js';
 
 let app;
 let inited = false;
