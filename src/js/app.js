@@ -342,6 +342,7 @@ const app = new Framework7({
       }
 
       try {
+        console.log('app.methods.load', source, ...args);
         return await dataManager.get(source, ...args);
       } catch (err) {
         let msg;        

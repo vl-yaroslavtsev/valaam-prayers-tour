@@ -2,7 +2,7 @@
 <template>
 	<div class="page" data-name="rites-status">
 
-		<div class="navbar">
+		<div class="navbar navbar-large navbar-transparent">
 			<div class="navbar-bg"></div>
 			<div class="navbar-inner sliding">
 				<div class="left">
@@ -11,36 +11,60 @@
 						<span class="">Назад</span>
 					</a>
 				</div>
-				<div class="title">Записка {{id}}</div>
+				<div class="title-large">
+					<div class="title-large-text">
+						{{#if rite}}Записка №{{rite.number}}{{/if}}
+					</div>
+				</div>
 			</div>
 		</div>
 
 		<div class="page-content">
 			<div class="tile">
-				<div class="block block-strong no-hairlines-md vm-rites-status">
-					<div class="block-title-medium">{{status}}</div>
-					<div class="block-footer {{#if is_payment}}vm-rites-payment-done{{/if}}">
-						<div>Ваше пожертвование принято – Благодарим Вас</div>
-						<div>
-							<!--Пожертвование к нам пока не поступило-->
-							<div>Ожидание пожертвования ... <span class="preloader float-right"></span></div>
-						</div>
-					</div>
-				</div>
-
-				<div class="block-title">Поминовение {{rite[0]}}</div>
-				<div class="list simple-list no-hairlines-md">
-					<ul><li>{{rite[1]}}</li></ul>
-				</div>
-
-				<div class="block-title">Имена</div>
+				{{#if rite}}
 				<div class="list simple-list no-hairlines-md">
 					<ul>
-						{{#each names}}
-						<li>{{this}}</li>
+						<li>
+							<div class="item-title">
+								<div class="item-header">Статус</div>
+								{{#js_if 'this.rite.status.xmlId != `new`'}}
+								Пожертвование принято
+								{{else}}
+								Ожидание пожертвования ...
+								{{/js_if}}
+							</div>
+							{{#js_if 'this.rite.status.xmlId == `new`'}}
+							<span class="preloader float-right"></span>
+							{{/js_if}}
+						</li>
+						<li>
+							<div class="item-title">
+								<div class="item-header">Пожертвование</div>
+								{{rite.sumFormatted}}
+							</div>
+						</li>
+						<li>
+							<div class="item-title">
+								<div class="item-header">Поминовение</div>
+								{{#js_if 'this.rite.type.period == "1day"'}}
+								{{rite.period.from.value}}
+								{{else}}
+								с {{rite.period.from.value}} по {{rite.period.to.value}}
+								{{/js_if}}
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div class="block-title">{{rite.type.typeName}}<br>{{rite.type.shortName}}</div>
+				<div class="list simple-list no-hairlines-md">
+					<ul>
+						{{#each rite.names}}
+						<li>{{this.explanation}} {{this.name}}</li>
 						{{/each}}
 					</ul>
 				</div>
+				{{/if}}
 			</div>
 		</div>
 	</div>
@@ -48,61 +72,72 @@
 
 <!--suppress HtmlUnknownAttribute -->
 <style scoped>
-	.vm-rites-status > .block-footer > :first-child {
-		display: none;
-	}
-
-	.vm-rites-status > .block-footer > :last-child {
-		display: block;
-	}
-
-	.vm-rites-status > .block-footer.vm-rites-payment-done > :first-child {
-		display: block;
-	}
-
-	.vm-rites-status > .block-footer.vm-rites-payment-done > :last-child {
-		display: none;
-	}
 </style>
 
 <!--suppress JSAnnotator, JSIgnoredPromiseFromCall -->
 <script>
 	import {Request} from 'framework7';
 	import dataManager from '../js/data/manager.js';
-	import { API_URL } from '../js/config.js';
+	import { API_URL, RITES_API_URL } from '../js/config.js';
+	import {
+		format,
+		parse,
+	} from '../js/utils/date-utils.js';
 
-	let ritesConfig;
 	export default {
 		methods: {
 			async checkStatus() {
-				let {data: result} = await Request.promise.json(`${API_URL}rites/${this.id}`);
+				// let {data: result} = await Request.promise.json(`${API_URL}rites/${this.id}`);
 
-				if (+result['status_id'] === ritesConfig['constants']['BX_IBLOCK_RITEORDER__STATUS_PAY'] ||
-				    +result['status_id'] === ritesConfig['constants']['BX_IBLOCK_RITEORDER__STATUS_DONE']) {
-					this.$el.find('.vm-rites-status > .block-title-medium').text(result['status']);
-					this.$el.find('.vm-rites-status > .block-footer').addClass('vm-rites-payment-done');
-				} else this.timerId = setTimeout(() => {
-					this.checkStatus();
-				}, 2000);
+				const riteId = Number(this.rite.id);
+				const params = {
+					clientId: localStorage.getItem("rites-client-id"),
+					perPage: 5,
+					orderBy: 'date',
+					order: 'desc'
+				};
+				const searchParams = new URLSearchParams(params);
+
+				const response = await fetch(
+					`${RITES_API_URL}rites?${searchParams.toString()}`
+				);
+				const data = await response.json();
+
+				const riteItem = data.items.find(item => item.id === riteId);
+				
+				if (riteItem) {
+					this.$setState({
+						rite: riteItem
+					});	
+				}
+
+				if (!riteItem || riteItem.status.xmlId == 'new') {
+					this.timerId = setTimeout(() => {
+						this.checkStatus();
+					}, 1000);
+				}
+			},
+
+			formatDate(timestamp) {
+				return format(new Date(timestamp));
 			}
 		},
 		on: {
 			pageAfterIn() {
-				if(+this['status_id'] !== ritesConfig['constants']['BX_IBLOCK_RITEORDER__STATUS_PAY'] ||
-				   +this['status_id'] !== ritesConfig['constants']['BX_IBLOCK_RITEORDER__STATUS_DONE'])
+				if(this.rite.status.xmlId == 'new') {
 					this.timerId = setTimeout(() => {
 						this.checkStatus();
-					}, 2000);
+					}, 1000);
+				}
 			},
 			pageBeforeOut() {
 				clearTimeout(this.timerId);
 			}
 		},
 		data() {
-			ritesConfig = dataManager.cache.ritesConfig;
 			let ctx = this.$route.context;
 
-			ctx.rite[1] = ctx.rite[1].replace(/(\d+) /, '$1&nbsp;');
+			//ctx.rite[1] = ctx.rite[1].replace(/(\d+) /, '$1&nbsp;');
 
 			return ctx;
 		}

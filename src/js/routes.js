@@ -1,7 +1,7 @@
 
 import Framework7, { Request } from 'framework7';
 import './t7-helpers.js';
-import { API_URL } from './config.js';
+import { API_URL, RITES_API_URL } from './config.js';
 
 import Calendar from '../pages/calendar.f7.html';
 import CalendarHolidays from '../pages/calendar-holidays.f7.html';
@@ -185,27 +185,45 @@ export default [
 	{
 		path: '/rites-name/:idx',
 		component: RitesName,
-		beforeEnter: requireData('ritesConfig')
+		beforeEnter: requireData(['ritesHealthExplanations', 'ritesReposeExplanations', 'ritesTypes', 'ritesNames'])
 	},
 	{
 		path: '/rites-status',
 		async async(routeTo, routeFrom, resolve, reject) {
-			let app = this.app;
+			const app = this.app;
 
 			app.preloader.show();
+
+			const riteId = Number(routeTo.query.id);
+			const params = {
+				clientId: localStorage.getItem("rites-client-id"),
+				perPage: 5,
+				orderBy: 'date',
+				order: 'desc'
+			};
+			const searchParams = new URLSearchParams(params);
+
 			try {
-				let {data} = await Request.promise.json(
-					`${API_URL}rites/${routeTo.query.id}`
+				const response = await fetch(
+					`${RITES_API_URL}rites?${searchParams.toString()}`
 				);
-				app.preloader.hide();
-				resolve({component: RitesStatus}, {context: data});
+				const data = await response.json();
+
+				const riteItem = data.items.find(item => item.id === riteId);
+				if (!riteItem) {
+					throw new Error('rite item not found!');
+				}
+				
+				resolve({component: RitesStatus}, {context: {rite: riteItem} });
 			} catch (ex) {
 				app.methods.showLoadError();
-				app.preloader.hide();
 				reject();
+				throw ex;
+			} finally {
+				app.preloader.hide();
 			}
 		},
-		beforeEnter: requireData('ritesConfig')
+		beforeEnter: requireData('ritesTypes')
 	},
 	{
 		path: '/prayers/:sectionId',
@@ -270,6 +288,8 @@ function requireData(source) {
 		if(!Array.isArray(params)) {
 			params = [source];
 		}
+
+		console.log('requireData, loading sources', params);	
 
 		try {
 			app.preloader.show();

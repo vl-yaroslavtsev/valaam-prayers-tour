@@ -92,7 +92,7 @@
 <script>
 	import { Request, Dom7 as $$ } from 'framework7';
 	import dataManager from '../js/data/manager.js';
-	import { BASE_URL } from '../js/config.js';
+	import { BASE_URL, RITES_API_URL } from '../js/config.js';
 
 	let $el;
 
@@ -100,17 +100,21 @@
 		data() {
 			let idx = this.$route.params.idx,
 				app = this.$app,
-				ritesConfig = dataManager.cache.ritesConfig,
+				ritesHealthExplanations = dataManager.cache.ritesHealthExplanations,
+				ritesReposeExplanations = dataManager.cache.ritesReposeExplanations,
+				ritesTypes = dataManager.cache.ritesTypes,
+				ritesNames = dataManager.cache.ritesNames,
+				
 				$name = this.$$('#rite-name-' + idx),
-				{explanationsCommon, explanationsAlive, explanationsDead, rites} = ritesConfig,
 				$ss = app.smartSelect.get('.vm-rites-rite .smart-select'),
-				ritesItem = rites.find(({id}) => id === $ss.getValue())
+				ritesItem = ritesTypes.find(({id}) => id === Number($ss.getValue()))
 			;
 
 			return {
 				title: ritesItem.name.split(' - ')[0],
 				name: [$name.find('.item-title').text(), $name.find('.item-after').text()],
-				explanations: explanationsCommon.concat(ritesItem.type === "4" ? explanationsAlive : explanationsDead).sort()
+				explanations: ritesItem.type === "health" ? ritesHealthExplanations : ritesReposeExplanations,
+				ritesNames
 			};
 		},
 		methods: {
@@ -122,7 +126,6 @@
 			pageBeforeOut(e, page) {
 				let idx = this.$route.params.idx,
 					app = this.$app,
-					ritesConfig = dataManager.cache.ritesConfig,
 					$name = this.$$('#rite-name-' + idx),
 					name = page.$el.find('#autocomplete-names').val().trim(),
 					explanations = this.explanations,
@@ -147,6 +150,7 @@
 			},
 			pageInit(e, page) {
 				let explanations = this.explanations,
+						ritesNames = this.ritesNames,
 						app = this.$app;
 
 				$el = page.$el;
@@ -154,16 +158,16 @@
 				this.acNames = app.autocomplete.create({
 					inputEl: '#autocomplete-names',
 					openIn: 'dropdown',
-					async source(query, render) {
+					source: (query, render) => {
+						let results = [];
+
 						if(query.length === 0)
-							render([]);
-						else {
-							let {data} = await Request.promise.json(
-								`${BASE_URL}/local/php-includes/rites-name.php`,
-								{q: query}
-							);
-							render(data);
-						}
+							results = [];
+						else for(let i = 0; i < ritesNames.length; i++)
+								if(ritesNames[i].toLowerCase().indexOf(query.toLowerCase()) === 0)
+									results.push(ritesNames[i]);
+
+						render(results);
 					}
 				});
 
@@ -176,7 +180,7 @@
 						if(query.length === 0)
 							results = explanations;
 						else for(let i = 0; i < explanations.length; i++)
-								if(explanations[i].toLowerCase().indexOf(query.toLowerCase()) >= 0)
+								if(explanations[i].toLowerCase().indexOf(query.toLowerCase()) === 0)
 									results.push(explanations[i]);
 
 						render(results);

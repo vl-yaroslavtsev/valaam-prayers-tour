@@ -7,3 +7,4 @@ node_modules/
 .ftpignore
 sftp.json
 deploy.env
+scripts/deploy.env.cmd

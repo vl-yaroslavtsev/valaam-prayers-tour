@@ -1,5 +1,6 @@
 import DataSource from './source.js';
 import { API_URL } from '../config.js';
+import { RITES_API_URL } from '../config.js';
 
 export default [
 	new DataSource({
@@ -24,8 +25,33 @@ export default [
 		handler: 'cacheThenNetwork'
 	}),
 	new DataSource({
+		id: 'ritesTypes',
+		url: `${RITES_API_URL}rites/types`,
+		handler: 'cacheThenNetwork'
+	}),
+	new DataSource({
+		id: 'ritesStatuses',
+		url: `${RITES_API_URL}rites/statuses`,
+		handler: 'cacheThenNetwork'
+	}),
+	new DataSource({
 		id: 'valaamGid',
-		url: `${API_URL}?referer1=valaam.tour&type=json`,
+		url: `${RITES_API_URL}rites/valaamGid?referer1=valaam.tour`,
+		handler: 'cacheThenNetwork'
+	}),
+	new DataSource({
+		id: 'ritesHealthExplanations',
+		url: `${RITES_API_URL}rites/explanations?type=health`,
+		handler: 'cacheThenNetwork'
+	}),
+	new DataSource({
+		id: 'ritesReposeExplanations',
+		url: `${RITES_API_URL}rites/explanations?type=repose`,
+		handler: 'cacheThenNetwork'
+	}),
+	new DataSource({
+		id: 'ritesNames',
+		url: `${RITES_API_URL}rites/names`,
 		handler: 'cacheThenNetwork'
 	}),
 	new DataSource({
