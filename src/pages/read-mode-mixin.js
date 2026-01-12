@@ -273,6 +273,22 @@ class ReadMode extends StateStore {
 		let clickCenter = false;
 		let barShown = !$progressbar.hasClass('toolbar-hidden');
 
+		// Обработка якорных ссылок (внутренних ссылок на элементы на этой же странице)
+		if (e.target.tagName === "A" && e.target.getAttribute('href')?.startsWith('#')) {
+			e.preventDefault();
+			let targetId = e.target.getAttribute('href').substring(1);
+			let targetElement = $content.find(`#${targetId}`)[0];
+			if (targetElement) {
+				let targetOffset = targetElement.offsetTop;
+				let blockElement = $content.find('.block-strong.inset')[0];
+				if (blockElement) {
+					targetOffset += blockElement.offsetTop;
+				}
+				$content.scrollTop(targetOffset - 50, 300); // 50px отступ сверху, 300ms анимация
+			}
+			return;
+		}
+
 		if (["A", "BUTTON", "IMG"].includes(e.target.tagName)) {
 			return;
 		}

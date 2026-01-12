@@ -68,10 +68,14 @@
 			data.title = 'Богослужебные указания';
 			data.subtitle = format(oldstyleDate, 'd MMMM / ') +
 											format(newstyleDate, `d MMMM yyyy г. ${dayOfWeek}.`);
-			data.text = /*marked*/(dayData.instructions)
-				.replace(/\^(\d+)/g, '<sup>$1</sup>')
-				.replace(/href="(https?)/g, 'class="external" href="$1')
-			;
+		data.text = /*marked*/(dayData.instructions)
+			.replace(/\^(\d+)/g, '<sup>$1</sup>')
+			.replace(/href="(https?)/g, 'class="external" href="$1')
+			// Создаем якоря для пунктов А., Б., В., Г., Д.
+			.replace(/(<p><strong>)([АБВГД])\./g, '$1<span id="$2">$2.</span>')
+			// Создаем ссылки из (А), (Б), (В), (Г), (Д) на соответствующие якоря
+			.replace(/\(([АБВГД])\)/g, '<a href="#$1">($1)</a>')
+		;
 
 			return data;
 		},
