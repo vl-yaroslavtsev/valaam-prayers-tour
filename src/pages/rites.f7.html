@@ -163,6 +163,7 @@
 													 placeholder="Выберите дату поминовения"
 													 readonly="readonly"
 													 id="formRites-period-formatted"/>
+										<div class="item-input-error-message"></div>
 										 <input type="hidden"
 														name="period"
 														value="{{period}}"
@@ -217,6 +218,7 @@
 											 maxlength="7"
 										   data-error-message="Введите корректную сумму"
 											 autocomplete="false" >
+									<div class="item-input-error-message"></div>
 									<span class="input-clear-button"></span>
 									<div class="item-input-info">
 										Cумму можно изменить
@@ -230,7 +232,7 @@
 				<div class="block-title">Электронная почта</div>
 				<div class="list form-list no-hairlines-md ext-margin">
 					<ul>
-						<li class="item-content item-input item-input-outline">
+						<li class="item-content item-input item-input-outline vm-rites-email">
 							<div class="item-inner">
 								<div class="item-input-wrap">
 									<!--suppress HtmlUnknownAttribute -->
@@ -244,6 +246,7 @@
 												 required
 												 pattern=".+@.+\\.[a-z]{2,}"
 										   	 data-error-message="Введите корректный адрес">
+									<div class="item-input-error-message"></div>
 									<span class="input-clear-button"></span>
 									<div class="item-input-info">
 										Для уведомлений о статусе пожертвования
@@ -323,6 +326,10 @@
 		margin-bottom: 100%;
 	}
 
+	.item-input .item-input-error-message {
+		white-space: normal;
+	}
+
 	@media (min-width: 768px) {
 		.vm-rites-payment .item-after > img {
 			height: 41px;
@@ -366,6 +373,7 @@
 			valaamGid, 
 			ritesTypes, 
 			ritesStatuses,
+			ritesTypeRestrictions,
 			ritesHealthExplanations,
 			ritesReposeExplanations;
 
@@ -394,15 +402,30 @@
 				});
 			},
 
-			async renderWidget(token, { onDone = () => {}, onError = () => {} } = {}) {
+			setFieldError(field, error) {
+				const $form = this.$$('#formRites');
+				const $field = $form.find(`.vm-rites-${field}`);
+				if ($field.length) {
+					const $err = $field.find('.item-input-error-message');
+					$err.html(error);
+					$field.addClass('item-input-invalid');
+				}
+			},
+
+		async renderWidget(token, { onDone = () => {}, onError = () => {} } = {}) {
+			try {
 				await this.loadYooKassaScript();
+				
 				const checkout = new window.YooMoneyCheckoutWidget({
 					confirmation_token: token,
 					customization: {
 						//Настройка способа отображения
 						modal: true
 					},
-					error_callback: (error) => onError(error)
+					error_callback: (error) => {
+						console.error('Ошибка виджета YooKassa:', error);
+						onError(error);
+					}
 				});
 
 				checkout.on("complete", ({status}) => {
@@ -412,184 +435,264 @@
 
 				//Отображение платежной формы в контейнере
 				checkout.render();
-			},
+			} catch (err) {
+				console.error('Ошибка при инициализации виджета оплаты:', err);
+				throw new ApiError('Не удалось загрузить форму оплаты. Попробуйте позже.');
+			}
+		},
 
-			async saveRite({ rite, date, payment, donate, names } = {}) {
+		async saveRite({ rite, date, payment, donate, names } = {}) {
 
-				const data = {
-					"clientId":  getClientId(),
-					"rite": rite,
-					"date": date,
-					"payment": payment,
-					"donate": donate,
-					"names": names
-				};
+			const data = {
+				"clientId":  getClientId(),
+				"rite": rite,
+				"date": date,
+				"payment": payment,
+				"donate": donate,
+				"names": names
+			};
 
-				console.log('saveRite data', data);
+			//console.log('saveRite data', data);
 
+			try {
+				const response = await fetch(`${RITES_API_URL}rites`, {
+					method: 'POST',
+					headers: {
+							'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify(data)
+				});
+
+				// Проверяем, что ответ можно распарсить как JSON
+				let result;
 				try {
-					const response = await fetch(`${RITES_API_URL}rites`, {
-						method: 'POST',
-						headers: {
-								'Content-Type': 'application/json;charset=utf-8'
-						},
-						body: JSON.stringify(data)
-					});
-
-					const result = await response.json();
-
-					if(response.status === 200) {
-							return result;
-
-					} else {
-						const errors = [];
-						if(result.fullErrors){
-							const fullErrors = result.fullErrors.map(error => error.description);
-							if(fullErrors.length) {
-								errors.push(...fullErrors);
-							}
-						}  
-						
-						if(result.fieldsErrors) {
-							const fieldsErrors = result.fieldsErrors.map(error => `Поле ${error.field} : ${error.description}`);
-							if(fieldsErrors.length) {
-								errors.push(...fieldsErrors);
-							}
-						}
-
-						if(errors.length) {
-							throw new ApiError(errors.join('<br>'));
-						}
-					}
-
-				} catch (ex) {
-						throw ex;
+					result = await response.json();
+				} catch (parseError) {
+					console.error('Ошибка парсинга ответа сервера:', parseError);
+					throw new ApiError('Получен некорректный ответ от сервера');
 				}
 
-				return result;
-			},
+			if(response.status === 200) {
+					return result;
 
-			async initiatePayment(riteId, email) {
-				const data = {
-						clientId: getClientId(),
-						email: email,
-						payment: "widget",
-						valaam_gid: valaamGid,
-						ids:[riteId]
-				};
-
-				//console.log('initiatePayment data', data);
-
-				try {
-					const response = await fetch(`${RITES_API_URL}rites/initiatePayment`, {
-						method: 'POST',
-						headers: {
-								'Content-Type': 'application/json;charset=utf-8'
-						},
-						body: JSON.stringify(data)
-					});
-
-					const result = await response.json();
-
-					if (response.status === 200) {
-							return result;
-
-					} else {
-						const errors = [];
-						if(result.fullErrors){
-							const fullErrors = result.fullErrors.map(error => error.description);
-							if(fullErrors.length) {
-								errors.push(...fullErrors);
-							}
-						}  
-						
-						if(result.fieldsErrors) {
-							const fieldsErrors = result.fieldsErrors.map(error => `Поле ${error.field} : ${error.description}`);
-							if(fieldsErrors.length) {
-								errors.push(...fieldsErrors);
-							}
-						}
-
-						if(errors.length) {
-							throw new ApiError(errors.join('<br>'));
-						}
-					}
-
-				} catch (ex) {
-						throw ex;
-				}
-			},
-			async donate() {
-				let self = this,
-					$form = this.$$('#formRites'),
-					formData = app.form.convertToData('#formRites'),
-					$btn = this.$$('#formRites-button')
-				;
-
-				app.input.validateInputs($form);
-				let errors = $form.find('input.input-invalid');
-
-				if(!formData.names) {
-					app.methods.showError('Введите имя');
-					this.$router.navigate(this.$$('.vm-rites-names > ul > li:first-child > a').attr('href'));
-					return;
-				}
-
-				if(errors.length)
-					return;
-
-				app.preloader.show();
-				$btn.addClass('disabled');
-
-				app.methods.storageSet('rite-payment', formData.payment);
-				app.methods.storageSet('rite-email', formData.email);
+			} else {
+				// Обрабатываем общие ошибки (показываем в попапе)
+				if(result.fullErrors && result.fullErrors.length){
+					const fullErrors = result.fullErrors.map(error => error.description);
+					throw new ApiError(fullErrors.join('<br>'));
+				}  
 				
-				// console.log('formData', formData);
+				// Обрабатываем ошибки полей
+				if(result.fieldsErrors && result.fieldsErrors.length) {
+					result.fieldsErrors.forEach(err => {
+						if (err.field == 'donate') {
+							this.setFieldError('donate', err.description);
 
+						} else if (err.field == "date") {
+							this.setFieldError('period', err.description);
+
+						} else if (err.field == 'email') {
+							this.setFieldError('email', err.description);
+						}
+					});
+
+					return null;
+				}
+				// Если нет конкретных ошибок, но статус не 200
+				throw new ApiError(`Ошибка сервера (код ${response.status})`);
+			}
+
+			} catch (ex) {
+				// Обрабатываем сетевые ошибки
+				if (ex instanceof TypeError && ex.message === 'Failed to fetch') {
+					console.error('Ошибка сети при сохранении требы:', ex);
+					throw new ApiError('Ошибка подключения к серверу. Проверьте соединение с интернетом.');
+				}
+				
+				// Если это уже ApiError, просто пробрасываем
+				if (ex instanceof ApiError) {
+					throw ex;
+				}
+				
+				// Для всех остальных ошибок
+				console.error('Неожиданная ошибка при сохранении требы:', ex);
+				throw new ApiError('Произошла непредвиденная ошибка при сохранении требы');
+			}
+		},
+
+		async initiatePayment(riteId, email) {
+			const data = {
+					clientId: getClientId(),
+					email: email,
+					payment: "widget",
+					valaam_gid: valaamGid,
+					ids:[riteId]
+			};
+
+			
+			//console.log('initiatePayment data', data);
+
+			try {
+				const response = await fetch(`${RITES_API_URL}rites/initiatePayment`, {
+					method: 'POST',
+					headers: {
+							'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify(data)
+				});
+
+				// Проверяем, что ответ можно распарсить как JSON
+				let result;
 				try {
-						const rite = await this.saveRite({
-							rite: formData.rite, 
-							date: format(parse(formData.period.split('-')[0]), 'dd.MM.yyyy'), 
-							payment: "widget", 
-							donate: formData.donate, 
-							names: formData.names.split('\n').map(el => {
-								const arr = el.split(' ');
-								const name = arr.pop();
-								const explanation = arr.join(' ');
-								return {
-									name,
-									explanation
-								}
-							})
-						});
-						//console.log('saveRite response', rite);
-						const riteId = rite.id;
-						
-						const payment = await this.initiatePayment(riteId, formData.email, formData.payment);
-						//console.log('initiatePayment response', payment);
-						const { confirmationToken } = payment;
-						if (!confirmationToken) {
-							throw new Error('no confirmationToken!');
-						}
+					result = await response.json();
+				} catch (parseError) {
+					console.error('Ошибка парсинга ответа сервера:', parseError);
+					throw new ApiError('Получен некорректный ответ от сервера');
+				}
 
-						this.renderWidget(confirmationToken, {
-							onDone:  () => {
-								self.$router.navigate('/rites-status?id=' + riteId)
-							}
-						});
-					} catch (err) {
-						if (err instanceof ApiError) {
-							app.methods.showError(err.message);
-						} else {
-							app.methods.showLoadError();
+			if (response.status === 200) {
+					return result;
+
+			} else {
+
+				// Обрабатываем общие ошибки (показываем в попапе)
+				if(result.fullErrors && result.fullErrors.length){
+					const fullErrors = result.fullErrors.map(error => error.description);
+					throw new ApiError(fullErrors.join('<br>'));
+				}  
+				
+				// Обрабатываем ошибки полей
+				if(result.fieldsErrors && result.fieldsErrors.length) {
+					hasFieldErrors = true;
+					result.fieldsErrors.forEach(err => {
+						if (err.field == 'donate') {
+							this.setFieldError('donate', err.description);
+
+						} else if (err.field == "date") {
+							this.setFieldError('period', err.description);
+
+						} else if (err.field == 'email') {
+							this.setFieldError('email', err.description);
 						}
-						throw err;
-					} finally {
-						$btn.removeClass('disabled');
-						app.preloader.hide();
+					});
+
+					return null;
+				}
+				
+				// Если нет конкретных ошибок, но статус не 200
+				throw new ApiError(`Ошибка сервера при инициализации пожертвования (код ${response.status})`);
+			}
+
+			} catch (ex) {
+				// Обрабатываем сетевые ошибки
+				if (ex instanceof TypeError && ex.message === 'Failed to fetch') {
+					console.error('Ошибка сети при инициализации пожертвования:', ex);
+					throw new ApiError('Ошибка подключения к серверу. Проверьте соединение с интернетом.');
+				}
+				
+				// Если это уже ApiError, просто пробрасываем
+				if (ex instanceof ApiError) {
+					throw ex;
+				}
+				
+				// Для всех остальных ошибок
+				console.error('Неожиданная ошибка при инициализации платежа:', ex);
+				throw new ApiError('Произошла непредвиденная ошибка при инициализации пожертвования');
+			}
+		},
+		async donate() {
+			let self = this,
+				$form = this.$$('#formRites'),
+				formData = app.form.convertToData('#formRites'),
+				$btn = this.$$('#formRites-button')
+			;
+
+			app.input.validateInputs($form);
+			let errors = $form.find('input.input-invalid');
+
+			if(!formData.names) {
+				app.methods.showError('Введите имя');
+				this.$router.navigate(this.$$('.vm-rites-names > ul > li:first-child > a').attr('href'));
+				return;
+			}
+
+			if(errors.length)
+				return;
+
+			app.preloader.show();
+			$btn.addClass('disabled');
+
+			app.methods.storageSet('rite-payment', formData.payment);
+			app.methods.storageSet('rite-email', formData.email);
+			
+			// console.log('formData', formData);
+
+			try {
+					const rite = await this.saveRite({
+						rite: formData.rite, 
+						date: format(parse(formData.period.split('-')[0]), 'dd.MM.yyyy'), 
+						payment: "widget", 
+						donate: formData.donate, 
+						names: formData.names.split('\n').map(el => {
+							const arr = el.split(' ');
+							const name = arr.pop();
+							const explanation = arr.join(' ');
+							return {
+								name,
+								explanation
+							}
+						})
+					});
+					//console.log('saveRite response', rite);
+					
+					// Если rite === null, значит были ошибки полей - они уже отображены
+					if (!rite) {
+						return;
 					}
-				;
-			},
+					
+					if (!rite.id) {
+						throw new ApiError('Не удалось получить идентификатор требы');
+					}
+					
+					const riteId = rite.id;
+					
+					const payment = await this.initiatePayment(riteId, formData.email, formData.payment);
+					//console.log('initiatePayment response', payment);
+					
+					// Если payment === null, значит были ошибки полей - они уже отображены
+					if (!payment) {
+						return;
+					}
+					
+					const { confirmationToken } = payment;
+					if (!confirmationToken) {
+						throw new ApiError('Не удалось получить токен для оплаты');
+					}
+
+					this.renderWidget(confirmationToken, {
+						onDone:  () => {
+							self.$router.navigate('/rites-status?id=' + riteId)
+						},
+						onError: (error) => {
+							console.error('Ошибка виджета оплаты:', error);
+							app.methods.showError('Ошибка при загрузке формы оплаты');
+						}
+					});
+				} catch (err) {
+					// Обрабатываем ApiError - показываем сообщение пользователю
+					if (err instanceof ApiError) {
+						app.methods.showError(err.message);
+					} else {
+						// Для всех остальных ошибок показываем общее сообщение
+						console.error('Неожиданная ошибка при оформлении требы:', err);
+						app.methods.showError('Произошла непредвиденная ошибка. Попробуйте позже.');
+					}
+				} finally {
+					$btn.removeClass('disabled');
+					app.preloader.hide();
+				}
+			;
+		},
 			onRiteChanged({target}) {
 				let selectedRite = ritesTypes.find(({id}) => id == target.value);
 				selectedRite.group = selectedRite.name.split(' - ')[0];
@@ -672,8 +775,23 @@
 								];
 							},
 							disabled: (date) => {
-								const minDateStart = addDays(new Date(), this.selectedRite.processing);
+								let minDateStart = addDays(new Date(), this.selectedRite.processing);
 								const weekDays = this.selectedRite.weekDays || [];
+
+								ritesTypeRestrictions.forEach((item) => {
+									if (item.type != 'disallow' || !item.rites.includes(this.selectedRite.id)) {
+										return;
+									}
+
+									const notAllowedStart = new Date(item.from * 1000);
+									const notAllowedEnd = new Date(item.to * 1000);
+									
+									if (minDateStart >= notAllowedStart && minDateStart <= notAllowedEnd) {
+										minDateStart = notAllowedEnd;
+										minDateStart.setHours(0, 0, 0, 0);
+										minDateStart = addDays(minDateStart, 1);
+									}
+								});
 
 								return date < minDateStart ||
 											 (weekDays.length && !weekDays.includes(Number(format(date, 'i'))));
@@ -725,6 +843,24 @@
 		const weekDays = this.selectedRite.weekDays || [];
 		let date = addDays(new Date(), this.selectedRite.processing + 1);
 
+		console.log('this.selectedRite', this.selectedRite, 'date', date);
+		
+
+		ritesTypeRestrictions.forEach((item) => {
+			if (item.type != 'disallow' || !item.rites.includes(this.selectedRite.id)) {
+				return;
+			}
+
+			const notAllowedStart = new Date(item.from * 1000);
+			const notAllowedEnd = new Date(item.to * 1000);
+			
+			if (date >= notAllowedStart && date <= notAllowedEnd) {
+				date = notAllowedEnd;
+				date.setHours(0, 0, 0, 0);
+				date = addDays(date, 1);
+			}
+		});
+
 		if (weekDays.length > 0) {
 			while (true) {
 				if (weekDays.includes(Number(format(date, 'i')))) {
@@ -758,11 +894,13 @@
 			[
 				ritesTypes, 
 				ritesStatuses,
+				ritesTypeRestrictions,
 				ritesHealthExplanations,
 				ritesReposeExplanations
 			] = await Promise.all([
 				dataManager.get('ritesTypes'),
 				dataManager.get('ritesStatuses'),
+				dataManager.get('ritesTypeRestrictions'),
 				dataManager.get('ritesHealthExplanations'),
 				dataManager.get('ritesReposeExplanations')
 			]);

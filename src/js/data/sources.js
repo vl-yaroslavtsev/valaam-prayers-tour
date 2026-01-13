@@ -35,6 +35,11 @@ export default [
 		handler: 'cacheThenNetwork'
 	}),
 	new DataSource({
+		id: 'ritesTypeRestrictions',
+		url: `${RITES_API_URL}rites/typeRestrictions`,
+		handler: 'cacheThenNetwork'
+	}),
+	new DataSource({
 		id: 'valaamGid',
 		url: `${RITES_API_URL}rites/valaamGid?referer1=valaam.tour`,
 		handler: 'cacheThenNetwork'

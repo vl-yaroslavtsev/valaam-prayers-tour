@@ -17,6 +17,27 @@ module.exports = (env = {}) => {
 		entry: {
 			app: './src/js/app.js'
 		},
+		devServer: {
+			contentBase: path.resolve(__dirname, 'dev'),
+			port: 3000,
+			open: true,
+			hot: true,
+			compress: true,
+			proxy: {
+				'/rest-tour': {
+					target: 'https://dev.molitvoslov.valaam.ru',
+					changeOrigin: true,
+					secure: false,
+					logLevel: 'debug'
+				},
+				'/api': {
+					target: 'https://dev.valaam.ru',
+					changeOrigin: true,
+					secure: false,
+					logLevel: 'debug'
+				}
+			}
+		},
 		plugins: [
 			new CleanWebpackPlugin({
 				cleanStaleWebpackAssets: false,
