@@ -32,7 +32,7 @@ echo Пользователь: %USER%
 echo Папка: %REMOTE_FOLDER%
 
 ssh -i %KEY% %USER% "rm -rf %REMOTE_FOLDER%/prayers.f7/*"
-scp -r -i %KEY% ./dev/* %USER%:%REMOTE_FOLDER%/prayers.f7/
+scp -r -i %KEY% ./dist/* %USER%:%REMOTE_FOLDER%/prayers.f7/
 ssh -i %KEY% %USER% "find %REMOTE_FOLDER%/prayers.f7/ -type d -exec chmod 4755 {} \;"
 
 echo Развертывание завершено!

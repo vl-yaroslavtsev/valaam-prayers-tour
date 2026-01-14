@@ -9,9 +9,9 @@
     "watch": "webpack --watch --progress",
     "dev": "webpack serve --mode development",
     "dev-old": "webpack && serve ./dev",
-    "dist": "webpack --env.production --env.hash && serve ./dist",
-    "prod": "jest && webpack --env.production --env.hash && npm run deploy",
-    "prod-test": "webpack --env.production --env.hash && npm run deploy-test",
+    "dist": "webpack --env production --env hash && serve ./dist",
+    "prod": "jest && webpack --env production --env hash && npm run deploy",
+    "prod-test": "webpack --env production --env hash && npm run deploy-test",
     "deploy": "call scripts\\deploy.env.cmd && scripts\\deploy.cmd",
     "deploy-test": "call scripts\\deploy.env.cmd && scripts\\deploy-test.cmd",
     "deploy-dev": "call scripts\\deploy.env.cmd && scripts\\deploy-dev.cmd"
