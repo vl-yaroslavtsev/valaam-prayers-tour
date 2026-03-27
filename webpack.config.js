@@ -25,13 +25,13 @@ module.exports = (env = {}) => {
 			compress: true,
 			proxy: {
 				'/rest-tour': {
-					target: 'https://new.molitvoslov.valaam.ru',
+					target: 'https://app.valaam.ru',
 					changeOrigin: true,
 					secure: false,
 					logLevel: 'debug'
 				},
 				'/api': {
-					target: 'https://new.valaam.ru',
+					target: 'https://valaam.ru',
 					changeOrigin: true,
 					secure: false,
 					logLevel: 'debug'
