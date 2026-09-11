@@ -6,12 +6,10 @@ import Framework7 from 'framework7';
 
 import StateStore from '../state-store.js';
 import { fetchJson, fetchRaw } from '../utils/utils.js';
-import { BASE_URL } from '../config.js';
+import { IMG_URL } from '../config.js';
 
 const RETRY_PERIOD = 2 * 1000;
 const MAX_RETRY_COUNT = 43200; // 1 сутки
-
-const SITE_URL = BASE_URL;
 
 class FetchTask extends StateStore {
 
@@ -70,6 +68,7 @@ class FetchTask extends StateStore {
 			for (let len = this.urls.length; i < len; i++) {
 				let url = this.urls[i];
 				let data;
+				let saveUrls;
 
 				bulkUrls.push(url);
 				if (bulkUrls.length < this.bulk_size &&
@@ -94,10 +93,11 @@ class FetchTask extends StateStore {
 					);
 					data = data.filter(json => !!json);
 					if (this.bulk_size === 1) data = data[0];
+					saveUrls = this.bulk_size === 1 ? url : bulkUrls;
 				} else if (this.type === 'raw') {
-					data = await Promise.all(
+					const results = await Promise.all(
 						bulkUrls.map(url => fetchRaw(
-							SITE_URL + url,
+							IMG_URL + url,
 							{
 								signal,
 								progress: ({chunk}) => {
@@ -109,8 +109,15 @@ class FetchTask extends StateStore {
 							}
 						))
 					);
-					data = data.filter(blob => !!blob);
-					if (this.bulk_size === 1) data = data[0];
+					const pairs = results.reduce((acc, blob, idx) => {
+						if (blob) {
+							acc.blobs.push(blob);
+							acc.urls.push(bulkUrls[idx]);
+						}
+						return acc;
+					}, {blobs: [], urls: []});
+					data = this.bulk_size === 1 ? pairs.blobs[0] : pairs.blobs;
+					saveUrls = this.bulk_size === 1 ? pairs.urls[0] : pairs.urls;
 				}
 
 				await this.setState({
@@ -121,7 +128,9 @@ class FetchTask extends StateStore {
 					downloaded
 				});
 
-				await this.save(data,	this.bulk_size === 1 ? url : bulkUrls);
+				if (this.bulk_size === 1 ? data : (data && data.length)) {
+					await this.save(data, saveUrls);
+				}
 
 				await this.setState({
 					index: i + 1,

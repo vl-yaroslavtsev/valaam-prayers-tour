@@ -14,7 +14,7 @@ import { bytesToSize } from "../utils/utils.js";
 import StateStore from "../state-store.js";
 import db from "../data/db.js";
 import downloadItemsList from "./items.js";
-import { BASE_URL, API_URL } from '../config.js';
+import { BASE_URL, API_URL, IMG_URL } from '../config.js';
 
 let manager;
 
@@ -193,7 +193,7 @@ async function testFitures() {
   await (async function _testBlobImg() {
     let blob, result;
     let src2 =
-      `${BASE_URL}/upload/iblock/59f/59fcea0d296ab35820997e98bed8c3bd.jpg`;
+      `${IMG_URL}/upload/iblock/59f/59fcea0d296ab35820997e98bed8c3bd.jpg`;
     result = "";
     try {
       let response = await fetch(src2);

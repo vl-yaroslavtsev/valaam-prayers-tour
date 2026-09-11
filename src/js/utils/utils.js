@@ -178,6 +178,9 @@ async function fetchRaw(url, {params = {}, signal, progress} = {}) {
 	});
 
 	if (!response.ok) {
+		if ([502, 503, 504].includes(response.status)) {
+			throw new TypeError(`HTTP ${response.status}`);
+		}
 		return null;
 	}
 

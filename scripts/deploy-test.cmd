@@ -33,6 +33,6 @@ echo Папка: %REMOTE_FOLDER%
 
 ssh -i %KEY% %REMOTE% "rm -rf %REMOTE_FOLDER%/*"
 scp -r -i %KEY% ./dist/* %REMOTE%:%REMOTE_FOLDER%/
-ssh -i %KEY% %REMOTE% "find %REMOTE_FOLDER%/ -type d -exec chmod 4750 {} \;"
+ssh -i %KEY% %REMOTE% "find %REMOTE_FOLDER%/ -type d -exec chmod 4755 {} \;"
 
 echo Развертывание завершено!

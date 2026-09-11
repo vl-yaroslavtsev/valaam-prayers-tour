@@ -1,4 +1,5 @@
 const path = require('path');
+const https = require('https');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
@@ -7,7 +8,19 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
 
+const proxyAgent = new https.Agent({
+	keepAlive: true,
+	maxSockets: 6
+});
 
+const proxyCommon = {
+	changeOrigin: true,
+	secure: false,
+	logLevel: 'debug',
+	timeout: 120000,
+	proxyTimeout: 120000,
+	agent: proxyAgent
+};
 
 module.exports = (env = {}) => {
 	const devMode = !env.production;
@@ -25,16 +38,19 @@ module.exports = (env = {}) => {
 			compress: true,
 			proxy: {
 				'/rest-tour': {
-					target: 'https://app.valaam.ru',
-					changeOrigin: true,
-					secure: false,
-					logLevel: 'debug'
+					...proxyCommon,
+					target: 'https://app.valaam.ru'
 				},
 				'/api': {
+					...proxyCommon,
+					target: 'https://valaam.ru'
+				},
+				'/upload': {
+					...proxyCommon,
 					target: 'https://valaam.ru',
-					changeOrigin: true,
-					secure: false,
-					logLevel: 'debug'
+					headers: {
+						Referer: 'https://valaam.ru/'
+					}
 				}
 			}
 		},

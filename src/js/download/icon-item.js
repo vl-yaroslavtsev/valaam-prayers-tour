@@ -2,6 +2,7 @@ import { getUnixTime } from '../utils/date-utils.js';
 import { fetchJson } from '../utils/utils.js';
 import DownloadItem from './item.js';
 import FetchTask from './fetch-task.js';
+import { IS_DEV } from '../config.js';
 
 /**
  * Группа источиков данных для загрузки
@@ -85,6 +86,9 @@ class IconDownloadItem extends DownloadItem {
 	 * @return {Promise}
 	 */
 	async save(blobs, urls) {
+		if (!blobs || !blobs.length || !urls || !urls.length) {
+			return;
+		}
 		let data = blobs.map(({raw, type}, index) => {
 			let url = urls[index];
 			return {
@@ -93,7 +97,10 @@ class IconDownloadItem extends DownloadItem {
 				raw,
 				type
 			}
-		});
+		}).filter(item => item.url && item.raw);
+		if (!data.length) {
+			return;
+		}
 		await this.sources[0].save(data);
 		this.emit('data:saved', data);
 	}
@@ -106,7 +113,7 @@ class IconDownloadItem extends DownloadItem {
 			id: this.id,
 			urls: this.urls,
 			type: 'raw',
-			bulk_size: 30,
+			bulk_size: IS_DEV ? 6 : 30,
 			save: async (blobs, urls) => this.save(blobs, urls)
 		});
 

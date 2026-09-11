@@ -137,10 +137,11 @@ class JsonDownloadItem extends DownloadItem {
 	 * @return {Promise}
 	 */
 	async save(data, sourceUrl) {
-		sourceUrl = new URL(sourceUrl);
-		let source = this.sources.find(
-			({url}) => url === (sourceUrl.origin + sourceUrl.pathname)
-		);
+		const sourcePath = String(sourceUrl).split('?')[0];
+		const source = this.sources.find(({url}) => url === sourcePath);
+		if (!source) {
+			throw new Error(`Не найден источник для ${sourcePath}`);
+		}
 		await source.save(data);
 
 		this.emit('data:saved', data, source);
