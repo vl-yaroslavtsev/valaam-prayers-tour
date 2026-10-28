@@ -669,15 +669,24 @@
 						throw new ApiError('Не удалось получить токен для оплаты');
 					}
 
-					this.renderWidget(confirmationToken, {
-						onDone:  () => {
-							self.$router.navigate('/rites-status?id=' + riteId)
-						},
-						onError: (error) => {
-							console.error('Ошибка виджета оплаты:', error);
-							app.methods.showError('Ошибка при загрузке формы оплаты');
-						}
-					});
+					// на ios виджет не работает внутри webview
+					if (app.device.ios) {
+						const url = `https://tg.valaam.ru/payment?confirmationToken=${confirmationToken}&source=rites`;
+						console.log('openLink', url);
+						window.open(url);
+						self.$router.navigate('/rites-status?id=' + riteId);
+
+					} else {
+						this.renderWidget(confirmationToken, {
+							onDone:  () => {
+								self.$router.navigate('/rites-status?id=' + riteId)
+							},
+							onError: (error) => {
+								console.error('Ошибка виджета оплаты:', error);
+								app.methods.showError('Ошибка при загрузке формы оплаты');
+							}
+						});
+					}
 				} catch (err) {
 					// Обрабатываем ApiError - показываем сообщение пользователю
 					if (err instanceof ApiError) {
