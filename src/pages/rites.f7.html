@@ -441,6 +441,112 @@
 			}
 		},
 
+		/**
+		 * Страница оплаты в текущем WKWebView.
+		 * window.open (_blank) iOS не показывает: нового окна нет.
+		 * URL без слэша nginx редиректит на http, и ATS обрывает загрузку.
+		 */
+		openIosPayment(url, riteId) {
+			this.closeIosPayment();
+
+			if (!document.getElementById('vm-rites-payment-frame-style')) {
+				const style = document.createElement('style');
+				style.id = 'vm-rites-payment-frame-style';
+				style.textContent = `
+					.vm-rites-payment-frame {
+						position: fixed;
+						z-index: 20000;
+						left: 0;
+						right: 0;
+						top: 0;
+						bottom: 0;
+						background: #fff;
+					}
+					.vm-rites-payment-frame-bar {
+						position: absolute;
+						left: 0;
+						right: 0;
+						top: 0;
+						display: flex;
+						align-items: center;
+						box-sizing: border-box;
+						height: calc(44px + var(--f7-safe-area-top, env(safe-area-inset-top, 0px)));
+						padding-top: var(--f7-safe-area-top, env(safe-area-inset-top, 0px));
+						padding-left: 4px;
+						padding-right: 8px;
+						border-bottom: 1px solid rgba(0, 0, 0, .12);
+						background: #1F1B1A;
+						color: #fff;
+					}
+					.vm-rites-payment-frame-bar .link {
+						min-width: 44px;
+						padding: 8px 12px;
+					}
+					.vm-rites-payment-frame-title {
+						flex: 1;
+						margin-right: 44px;
+						text-align: center;
+						font-size: 17px;
+					}
+					.vm-rites-payment-frame iframe {
+						position: absolute;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						top: calc(44px + var(--f7-safe-area-top, env(safe-area-inset-top, 0px)));
+						width: 100%;
+						border: 0;
+						background: #fff;
+						height: calc(100% - 44px - var(--f7-safe-area-top, env(safe-area-inset-top, 0px)));
+					}
+				`;
+				document.head.appendChild(style);
+			}
+
+			const frame = document.createElement('div');
+			frame.className = 'vm-rites-payment-frame';
+
+			const bar = document.createElement('div');
+			bar.className = 'vm-rites-payment-frame-bar';
+
+			const closeLink = document.createElement('a');
+			closeLink.href = '#';
+			closeLink.className = 'link';
+			closeLink.textContent = 'Закрыть';
+
+			const title = document.createElement('div');
+			title.className = 'vm-rites-payment-frame-title';
+			title.textContent = ''; //'Пожертвование';
+
+			const iframe = document.createElement('iframe');
+			iframe.title = 'Пожертвование';
+			iframe.setAttribute('allow', 'payment');
+			iframe.src = url;
+
+			bar.append(closeLink, title);
+			frame.append(bar, iframe);
+			document.body.appendChild(frame);
+
+			this._paymentFrame = frame;
+			this._paymentRiteId = riteId;
+
+			closeLink.addEventListener('click', (event) => {
+				event.preventDefault();
+				const id = this._paymentRiteId;
+				this.closeIosPayment();
+				if (id) {
+					this.$router.navigate('/rites-status?id=' + id);
+				}
+			});
+		},
+
+		closeIosPayment() {
+			if (this._paymentFrame) {
+				this._paymentFrame.remove();
+				this._paymentFrame = null;
+			}
+		},
+
 		async saveRite({ rite, date, payment, donate, names } = {}) {
 
 			const data = {
@@ -669,12 +775,11 @@
 						throw new ApiError('Не удалось получить токен для оплаты');
 					}
 
-					// на ios виджет не работает внутри webview
+					// Модальный виджет на iOS уходит в отдельное окно, там оплата зависает.
+					// window.open этот webview не выполняет, поэтому грузим страницу здесь.
 					if (app.device.ios) {
-						const url = `https://tg.valaam.ru/payment?confirmationToken=${confirmationToken}&source=rites`;
-						console.log('openLink', url);
-						window.open(url);
-						self.$router.navigate('/rites-status?id=' + riteId);
+						const url = `https://tg.valaam.ru/payment/?confirmationToken=${encodeURIComponent(confirmationToken)}&source=rites`;
+						this.openIosPayment(url, riteId);
 
 					} else {
 						this.renderWidget(confirmationToken, {
@@ -836,6 +941,7 @@
 			},
 			pageBeforeRemove(e, page) {
 					$el.off('focusin');
+					this.closeIosPayment();
 			}
 		},
 		data() {
