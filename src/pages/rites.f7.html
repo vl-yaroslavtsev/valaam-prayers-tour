@@ -530,21 +530,75 @@
 			this._paymentFrame = frame;
 			this._paymentRiteId = riteId;
 
-			closeLink.addEventListener('click', (event) => {
-				event.preventDefault();
+			const goToStatus = () => {
 				const id = this._paymentRiteId;
 				this.closeIosPayment();
 				if (id) {
 					this.$router.navigate('/rites-status?id=' + id);
 				}
+			};
+
+			// iOS забирает URL из iframe в Safari, webview уходит в фон.
+			// Когда приложение снова на экране, пустой iframe закрываем сами.
+			let leftApp = false;
+			let blurredAt = 0;
+			const isHidden = () => document.hidden || document.webkitHidden || document.visibilityState === 'hidden';
+			const iframeIsBlank = () => {
+				try {
+					const href = iframe.contentWindow.location.href;
+					return !href || href === 'about:blank';
+				} catch (err) {
+					return false;
+				}
+			};
+			const onVisibility = () => {
+				if (isHidden()) {
+					leftApp = true;
+					return;
+				}
+				if (leftApp) {
+					goToStatus();
+				}
+			};
+			const onBlur = () => {
+				blurredAt = Date.now();
+			};
+			const onFocus = () => {
+				const awayMs = blurredAt ? Date.now() - blurredAt : 0;
+				if (leftApp || (awayMs > 1000 && iframeIsBlank())) {
+					goToStatus();
+				}
+			};
+
+			document.addEventListener('visibilitychange', onVisibility);
+			document.addEventListener('webkitvisibilitychange', onVisibility);
+			document.addEventListener('resume', goToStatus);
+			window.addEventListener('blur', onBlur);
+			window.addEventListener('focus', onFocus);
+			this._paymentReturnCleanup = () => {
+				document.removeEventListener('visibilitychange', onVisibility);
+				document.removeEventListener('webkitvisibilitychange', onVisibility);
+				document.removeEventListener('resume', goToStatus);
+				window.removeEventListener('blur', onBlur);
+				window.removeEventListener('focus', onFocus);
+			};
+
+			closeLink.addEventListener('click', (event) => {
+				event.preventDefault();
+				goToStatus();
 			});
 		},
 
 		closeIosPayment() {
+			if (this._paymentReturnCleanup) {
+				this._paymentReturnCleanup();
+				this._paymentReturnCleanup = null;
+			}
 			if (this._paymentFrame) {
 				this._paymentFrame.remove();
 				this._paymentFrame = null;
 			}
+			this._paymentRiteId = null;
 		},
 
 		async saveRite({ rite, date, payment, donate, names } = {}) {
